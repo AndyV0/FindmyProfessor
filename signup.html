@@ -489,8 +489,13 @@
 
   function finish() {
     if (document.getElementById('submitBtn').classList.contains('ready')) {
-      alert(`Hackathon Demo: Account created for ${document.getElementById('fname').value} at ${document.getElementById('uni').value}!`);
-      window.location.reload(); 
+      if (selectedRole === 'student') {
+        window.location.href = 'studentPortal.html';
+      } else if (selectedRole === 'professor') {
+        window.location.href = 'professorPortal.html';
+      } else {
+        window.location.href = 'studentPortal.html'; // Fallback
+      }
     }
   }
 </script>
