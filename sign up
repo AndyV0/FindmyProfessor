@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Join FindMyProfessor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Manrope:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #f4efe6;
+    --ink: #171411;
+    --ink-soft: #4a4339;
+    --accent: #e8a733;
+    --terracotta: #c96442;
+    --cream: #f4efe6;
+    --rule: rgba(23, 20, 17, 0.1);
+    --error: #c94242;
+    --success: #7a8b6d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 50%, rgba(232, 167, 51, 0.05), transparent 70%);
+    opacity: 0.5;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 900px;
+    padding: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 12px;
+    overflow: visible; /* Changed to visible for dropdown */
+    box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    min-height: 540px;
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* STEP 1: ROLE SELECTION */
+  .step-1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .role-option {
+    padding: 60px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    text-align: left;
+  }
+
+  .role-option.student { background: var(--surface); border-right: 1px solid var(--rule); }
+  .role-option.professor { background: #1a1814; color: var(--cream); }
+  .role-option:hover { opacity: 0.9; transform: scale(0.99); }
+
+  .role-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0.6;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 400, 'SOFT' 30;
+    font-size: 42px;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  h2 em { font-style: italic; color: var(--terracotta); }
+  .professor h2 em { color: var(--accent); }
+
+  /* STEP 2: ACTUAL FORM */
+  .step-2 {
+    display: none;
+    padding: 50px 60px;
+    max-width: 540px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+  }
+
+  .form-header { margin-bottom: 32px; text-align: center; }
+
+  .field-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .field-row .field { margin-bottom: 0; flex: 1; }
+
+  .field { margin-bottom: 20px; position: relative; }
+  .field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--ink-soft);
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    transition: 0.2s;
+  }
+  input:focus { outline: none; border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(201, 100, 66, 0.1); }
+
+  /* Error Notices */
+  .error-notice {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 6px;
+    display: none;
+    font-weight: 500;
+  }
+  .error-notice.active { display: block; animation: shake 0.3s; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  /* Dropdown Styles */
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+  .dropdown-menu.active { display: block; }
+  .dropdown-item {
+    padding: 12px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--rule);
+  }
+  .dropdown-item:last-child { border-bottom: none; }
+  .dropdown-item:hover { background: rgba(23, 20, 17, 0.05); }
+
+  /* Validation Checklist */
+  .checklist {
+    margin-top: 12px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .check-item {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8d8275;
+    transition: all 0.3s ease;
+  }
+
+  .check-item svg { transition: all 0.3s ease; }
+
+  /* Glow States */
+  .check-item.valid {
+    color: var(--success);
+    text-shadow: 0 0 8px rgba(122, 139, 109, 0.4);
+  }
+  .check-item.valid svg { color: var(--success); filter: drop-shadow(0 0 4px var(--success)); }
+
+  .check-item.invalid {
+    color: var(--error);
+    text-shadow: 0 0 8px rgba(201, 66, 66, 0.4);
+  }
+  .check-item.invalid svg { color: var(--error); filter: drop-shadow(0 0 4px var(--error)); }
+
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 12px;
+    cursor: not-allowed;
+    opacity: 0.5;
+    transition: 0.3s;
+    border: none;
+  }
+
+  .btn-submit.ready {
+    cursor: pointer;
+    opacity: 1;
+    background: var(--terracotta);
+  }
+  .btn-submit.ready:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201, 100, 66, 0.3); }
+
+  .back-btn {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+  }
+  .back-btn:hover { color: var(--ink); }
+
+  @media (max-width: 768px) {
+    .step-1 { grid-template-columns: 1fr; }
+    .step-2 { padding: 40px 24px; }
+    .field-row { flex-direction: column; gap: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="backdrop"></div>
+
+<div class="container">
+  <div class="card" id="signupCard">
+    
+    <div class="step-1" id="step1">
+      <button class="role-option student" onclick="goToStep2('student')">
+        <div>
+          <div class="role-eyebrow">Option 01</div>
+          <h2>I am a <em>Student</em></h2>
+          <p style="font-size: 14px; opacity: 0.7;">Browse and apply for campus opportunities.</p>
+        </div>
+        <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue →</div>
+      </button>
+
+      <button class="role-option professor" onclick="goToStep2('professor')">
+        <div>
+          <div class="role-eyebrow">Option 02</div>
+          <h2>I am a <em>Professor</em></h2>
+          <p style="font-size: 14px; opacity: 0.7;">Post positions and manage applicants.</p>
+        </div>
+        <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue →</div>
+      </button>
+    </div>
+
+    <div class="step-2" id="step2">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div class="form-header">
+        <h2 id="formTitle">Create <em>Account</em></h2>
+        <p id="formSub" style="font-size: 14px; color: var(--ink-soft);"></p>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>First Name *</label>
+          <input type="text" id="fname" placeholder="Jane" oninput="validateForm()">
+        </div>
+        <div class="field">
+          <label>Last Name *</label>
+          <input type="text" id="lname" placeholder="Doe" oninput="validateForm()">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>University Name *</label>
+        <input type="text" id="uni" placeholder="Start typing your school..." autocomplete="off" oninput="handleUniInput()">
+        <div class="dropdown-menu" id="uniDropdown"></div>
+      </div>
+
+      <div class="field">
+        <label>University Email *</label>
+        <input type="email" id="email" placeholder="name@university.edu" oninput="validateForm()">
+        <div class="error-notice" id="emailError">⚠ Please enter a valid email format.</div>
+      </div>
+
+      <div class="field">
+        <label>Password *</label>
+        <input type="password" id="password" placeholder="••••••••" oninput="validateForm()">
+        
+        <ul class="checklist">
+          <li class="check-item" id="charLen">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+            At least 8 characters
+          </li>
+          <li class="check-item" id="hasNum">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+            Contains a number
+          </li>
+          <li class="check-item" id="hasSym">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+            Contains a symbol (@, #, !, etc.)
+          </li>
+        </ul>
+      </div>
+
+      <div class="field">
+        <label>Confirm Password *</label>
+        <input type="password" id="confirmPassword" placeholder="••••••••" oninput="validateForm()">
+        <div class="error-notice" id="matchError">⚠ Passwords do not match.</div>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="finish()">Finish Signup</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let selectedRole = '';
+  const UNIVERSITIES = [
+    "Stanford University", "Massachusetts Institute of Technology (MIT)", 
+    "Harvard University", "University of California, Berkeley (UCB)", 
+    "University of California, Los Angeles (UCLA)", "University of Southern California (USC)", 
+    "San Diego Mesa College", "Los Angeles City College (LACCD)", 
+    "Santa Monica College", "University of Oxford", "University of Tokyo", "New York University (NYU)"
+  ];
+
+  function goToStep2(role) {
+    selectedRole = role;
+    document.getElementById('step1').style.display = 'none';
+    const s2 = document.getElementById('step2');
+    s2.style.display = 'block';
+    
+    document.getElementById('formSub').textContent = role === 'student' 
+      ? 'Joining as a student to discover research.' 
+      : 'Joining as faculty to post positions.';
+    
+    document.getElementById('signupCard').style.maxWidth = '540px';
+    document.getElementById('signupCard').style.margin = '0 auto';
+  }
+
+  function goBack() {
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step1').style.display = 'grid';
+    document.getElementById('signupCard').style.maxWidth = '900px';
+  }
+
+  // University Dropdown Logic
+  function handleUniInput() {
+    const input = document.getElementById('uni').value.toLowerCase();
+    const dropdown = document.getElementById('uniDropdown');
+    dropdown.innerHTML = '';
+
+    if (!input) {
+      dropdown.classList.remove('active');
+      validateForm();
+      return;
+    }
+
+    const matches = UNIVERSITIES.filter(u => u.toLowerCase().includes(input));
+    
+    if (matches.length > 0) {
+      matches.forEach(match => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.textContent = match;
+        div.onclick = () => {
+          document.getElementById('uni').value = match;
+          dropdown.classList.remove('active');
+          validateForm();
+        };
+        dropdown.appendChild(div);
+      });
+      dropdown.classList.add('active');
+    } else {
+      dropdown.classList.remove('active');
+    }
+    validateForm();
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#uni') && !e.target.closest('#uniDropdown')) {
+      document.getElementById('uniDropdown').classList.remove('active');
+    }
+  });
+
+  function validateForm() {
+    const fname = document.getElementById('fname').value.trim();
+    const lname = document.getElementById('lname').value.trim();
+    const uni = document.getElementById('uni').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('password').value;
+    const confirmPass = document.getElementById('confirmPassword').value;
+    const btn = document.getElementById('submitBtn');
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailValid = emailRegex.test(email);
+    const emailError = document.getElementById('emailError');
+    if (email.length > 0 && !emailValid) {
+      emailError.classList.add('active');
+    } else {
+      emailError.classList.remove('active');
+    }
+
+    // Password requirements
+    const lenValid = pass.length >= 8;
+    const numValid = /\d/.test(pass);
+    const symValid = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+
+    updateCheck('charLen', lenValid, pass.length > 0);
+    updateCheck('hasNum', numValid, pass.length > 0);
+    updateCheck('hasSym', symValid, pass.length > 0);
+
+    // Confirm Password Match
+    const matchError = document.getElementById('matchError');
+    const passwordsMatch = pass === confirmPass && pass.length > 0;
+    
+    if (confirmPass.length > 0 && !passwordsMatch) {
+      matchError.classList.add('active');
+      document.getElementById('confirmPassword').style.borderColor = "var(--error)";
+      document.getElementById('confirmPassword').style.boxShadow = "0 0 0 4px rgba(201, 66, 66, 0.1)";
+    } else {
+      matchError.classList.remove('active');
+      document.getElementById('confirmPassword').style.borderColor = passwordsMatch ? "var(--success)" : "var(--rule)";
+      document.getElementById('confirmPassword').style.boxShadow = "none";
+    }
+
+    // Final form check
+    if (fname && lname && uni && emailValid && lenValid && numValid && symValid && passwordsMatch) {
+      btn.classList.add('ready');
+      btn.disabled = false;
+    } else {
+      btn.classList.remove('ready');
+      btn.disabled = true;
+    }
+  }
+
+  function updateCheck(id, isValid, isTyping) {
+    const el = document.getElementById(id);
+    el.classList.remove('valid', 'invalid');
+    
+    if (isValid) {
+      el.classList.add('valid'); // Glows Green
+    } else if (isTyping) {
+      el.classList.add('invalid'); // Glows Red
+    }
+  }
+
+  function finish() {
+    if (document.getElementById('submitBtn').classList.contains('ready')) {
+      alert(`Hackathon Demo: Account created for ${document.getElementById('fname').value} at ${document.getElementById('uni').value}!`);
+      window.location.reload(); 
+    }
+  }
+</script>
+
+</body>
+</html>
