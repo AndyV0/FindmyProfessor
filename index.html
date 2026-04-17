@@ -614,119 +614,6 @@
   }
   .modal-close:hover { background: rgba(23,20,17,0.08); color: var(--ink); }
 
-  /* SIGN UP ROLE SELECT */
-  .role-select {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 480px;
-  }
-
-  .role-card {
-    padding: 56px 44px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-    border: none;
-    text-align: left;
-    color: inherit;
-  }
-  .role-card.student {
-    background: var(--surface);
-    border-right: 1px solid rgba(23,20,17,0.08);
-  }
-  .role-card.professor {
-    background: var(--bg);
-    color: var(--cream);
-  }
-
-  .role-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--accent);
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 0;
-  }
-  .role-card:hover::after { opacity: 0.08; }
-  .role-card.professor:hover::after { opacity: 0.18; }
-  .role-card > * { position: relative; z-index: 1; }
-
-  .role-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    margin-bottom: 32px;
-    opacity: 0.6;
-  }
-  .role-card.professor .role-eyebrow { color: var(--accent); opacity: 1; }
-
-  .role-card h3 {
-    font-family: 'Fraunces', serif;
-    font-variation-settings: 'opsz' 144, 'wght' 400, 'SOFT' 30;
-    font-size: 48px;
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-    margin-bottom: 16px;
-  }
-  .role-card h3 em {
-    font-style: italic;
-    font-variation-settings: 'opsz' 144, 'wght' 400, 'SOFT' 100;
-  }
-  .role-card.student h3 em { color: var(--terracotta); }
-  .role-card.professor h3 em { color: var(--accent); }
-
-  .role-card p {
-    font-size: 14px;
-    line-height: 1.55;
-    opacity: 0.75;
-    max-width: 28ch;
-    margin-bottom: 32px;
-  }
-
-  .role-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 40px;
-  }
-  .role-features li {
-    font-size: 13px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    opacity: 0.85;
-  }
-  .role-features li::before {
-    content: '→';
-    flex-shrink: 0;
-    opacity: 0.5;
-  }
-
-  .role-cta {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 500;
-    padding-top: 16px;
-    border-top: 1px solid currentColor;
-    align-self: flex-start;
-    transition: gap 0.25s;
-  }
-  .role-card:hover .role-cta { gap: 16px; }
-  .role-card.student .role-cta { border-color: rgba(23,20,17,0.3); }
-  .role-card.professor .role-cta { color: var(--accent); border-color: var(--accent); }
-
   /* LOGIN / FORM */
   .form-modal .modal { max-width: 440px; }
   .form-panel {
@@ -828,10 +715,6 @@
     nav { padding: 20px 24px; }
     .corner { display: none; }
     .footer-strip { left: 24px; right: 24px; font-size: 9px; }
-    .role-select { grid-template-columns: 1fr; min-height: 0; }
-    .role-card.student { border-right: none; border-bottom: 1px solid rgba(23,20,17,0.08); }
-    .role-card { padding: 40px 32px; }
-    .role-card h3 { font-size: 38px; }
     .results-view { padding: 24px; }
     .positions-grid { grid-template-columns: 1fr; }
     .position { border-right: none !important; }
@@ -852,9 +735,7 @@
 </head>
 <body>
 
-<!-- ============ HERO ============ -->
 <div id="heroView" class="hero">
-  <!-- Decorative architectural grid -->
   <svg class="hero-grid" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
       <pattern id="g" width="60" height="60" patternUnits="userSpaceOnUse">
@@ -862,12 +743,10 @@
       </pattern>
     </defs>
     <rect width="100%" height="100%" fill="url(#g)"/>
-    <!-- Abstract architectural lines -->
     <g stroke="rgba(244,239,230,0.1)" stroke-width="1" fill="none">
       <line x1="0" y1="700" x2="1440" y2="700"/>
       <line x1="0" y1="720" x2="1440" y2="720"/>
       <path d="M 100 700 L 100 400 L 240 400 L 240 500 L 380 500 L 380 350 L 520 350 L 520 450 L 660 450 L 660 380 L 800 380 L 800 500 L 940 500 L 940 420 L 1080 420 L 1080 360 L 1220 360 L 1220 440 L 1340 440 L 1340 700"/>
-      <!-- Windows grid -->
       <g opacity="0.6">
         <rect x="130" y="440" width="12" height="16"/>
         <rect x="160" y="440" width="12" height="16"/>
@@ -900,13 +779,11 @@
   </svg>
   <div class="grain"></div>
 
-  <!-- Decorative corners -->
   <div class="corner tl"></div>
   <div class="corner tr"></div>
   <div class="corner bl"></div>
   <div class="corner br"></div>
 
-  <!-- NAV -->
   <nav class="anim anim-1">
     <div class="logo">
       <span class="mark"></span>
@@ -918,7 +795,6 @@
     </div>
   </nav>
 
-  <!-- HERO CONTENT -->
   <div class="hero-inner">
     <div class="eyebrow anim anim-2">Spring 2026 &nbsp;·&nbsp; 47 Universities</div>
 
@@ -957,7 +833,6 @@
     </div>
   </div>
 
-  <!-- Footer strip -->
   <div class="footer-strip">
     <span>[01] — Index Spring '26</span>
     <span>Built for students & faculty</span>
@@ -965,7 +840,6 @@
   </div>
 </div>
 
-<!-- ============ RESULTS VIEW ============ -->
 <div id="resultsView" class="results-view">
   <div class="results-nav">
     <div class="logo">
@@ -999,48 +873,6 @@
   <div class="positions-grid" id="positionsGrid"></div>
 </div>
 
-<!-- ============ SIGNUP MODAL ============ -->
-<div class="modal-backdrop" id="signupModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModals()" aria-label="Close">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 6 6 18M6 6l12 12"/>
-      </svg>
-    </button>
-
-    <div class="role-select">
-      <button class="role-card student" onclick="openForm('student')">
-        <div class="role-eyebrow">— 01 / Student</div>
-        <div>
-          <h3>I'm a <em>student</em><br/>looking for a role.</h3>
-          <p>Discover research, internships, and TA opportunities matched to your major, coursework, and skills.</p>
-          <ul class="role-features">
-            <li>Personalized matches by department</li>
-            <li>Apply with one click</li>
-            <li>Track every application</li>
-          </ul>
-        </div>
-        <span class="role-cta">Continue as student →</span>
-      </button>
-
-      <button class="role-card professor" onclick="openForm('professor')">
-        <div class="role-eyebrow">— 02 / Professor</div>
-        <div>
-          <h3>I'm a <em>professor</em><br/>posting positions.</h3>
-          <p>Publish research positions, internships, and TA roles to a filtered pool of qualified students at your institution.</p>
-          <ul class="role-features">
-            <li>Post in under 2 minutes</li>
-            <li>Reach only your students</li>
-            <li>Vetted applicant pipelines</li>
-          </ul>
-        </div>
-        <span class="role-cta">Continue as professor →</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ============ LOGIN / FORM MODAL ============ -->
 <div class="modal-backdrop form-modal" id="loginModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModals()" aria-label="Close">
@@ -1099,7 +931,7 @@ const POSITIONS = {
     { type:'ta', title:'Teaching Assistant — Child Growth & Development', prof:'Dr. M. Paris', dept:'ECE 101', tags:['Paid','Grading','Section'], posted:'1 week ago' },
     { type:'internship', title:'Policy Research Intern — Constitutional Law', prof:'Dr. R. Delgado', dept:'Political Science', tags:['Remote OK','Stipend','15hr/wk'], posted:'2 days ago' },
     { type:'research', title:'Statistical modeling of local election turnout', prof:'Dr. J. Okafor', dept:'Statistics', tags:['Data','R / Python','Summer'], posted:'5 days ago' },
-    { type:'ta', title:'Lab TA — Organic Chemistry II', prof:'Dr. A. Keshavarz', dept:'CHEM 212', tags:['Paid','Wed/Fri','Fall '26'], posted:'Today' },
+    { type:'ta', title:'Lab TA — Organic Chemistry II', prof:'Dr. A. Keshavarz', dept:'CHEM 212', tags:['Paid','Wed/Fri',"Fall '26"], posted:'Today' },
     { type:'internship', title:'Early Childhood Education field intern', prof:'Dr. S. Romero', dept:'ECE', tags:['In-person','Mornings'], posted:'4 days ago' },
   ],
   laccd: [
@@ -1269,14 +1101,12 @@ function renderPositions(list, filter) {
 }
 
 // ========== MODALS ==========
-const signupModal = document.getElementById('signupModal');
 const loginModal = document.getElementById('loginModal');
 
 function openSignup() {
-  closeModals();
-  signupModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  window.location.href = 'signup.html';
 }
+
 function openLogin() {
   closeModals();
   document.getElementById('formTitle').innerHTML = 'Log <em>in</em>';
@@ -1288,24 +1118,8 @@ function openLogin() {
   loginModal.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
-function openForm(role) {
-  closeModals();
-  if (role === 'student') {
-    document.getElementById('formTitle').innerHTML = 'Join as a <em>student</em>';
-    document.getElementById('formLead').textContent = 'Get matched to research, internships, and TA roles at your school.';
-  } else {
-    document.getElementById('formTitle').innerHTML = 'Join as a <em>professor</em>';
-    document.getElementById('formLead').textContent = 'Post positions and reach qualified students at your institution.';
-  }
-  document.getElementById('formSubmit').textContent = 'Create account';
-  document.getElementById('roleField').style.display = 'none';
-  document.getElementById('formFooter').innerHTML =
-    'Already have an account? <a onclick="closeModals(); openLogin();">Log in</a>';
-  loginModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
+
 function closeModals() {
-  signupModal.classList.remove('active');
   loginModal.classList.remove('active');
   document.body.style.overflow = '';
 }
