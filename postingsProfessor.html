@@ -19,6 +19,7 @@
     --accent: #e8a733;
     --terracotta: #c96442;
     --success: #7a8b6d;
+    --error: #c94242;
     --rule: rgba(23, 20, 17, 0.1);
   }
 
@@ -94,6 +95,7 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    z-index: 10;
   }
 
   .top-bar {
@@ -120,7 +122,8 @@
     text-transform: uppercase;
     transition: 0.2s;
   }
-  .btn-create:hover { background: var(--terracotta); }
+  .btn-create:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-create:not(:disabled):hover { background: var(--terracotta); }
 
   .main-content { padding: 40px 48px; width: 100%; }
 
@@ -136,8 +139,14 @@
     align-items: center;
     gap: 24px;
     transition: transform 0.2s;
+    animation: fadeIn 0.4s ease-out forwards;
   }
   .posting-island:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .post-info h3 { font-family: 'Fraunces', serif; font-size: 20px; margin-bottom: 6px; }
   .post-info p { font-size: 13px; color: var(--ink-soft); }
@@ -154,6 +163,7 @@
     font-weight: 800;
     text-transform: uppercase;
     text-align: center;
+    margin-bottom: 8px;
   }
   .status-active { background: #eef7ed; color: var(--success); }
   .status-draft { background: #f4f4f4; color: #888; }
@@ -174,56 +184,72 @@
   }
   .draft-placeholder:hover { background: #fff; border-color: var(--accent); color: var(--ink); }
 
-  /* ============ MODAL ============ */
-  .modal-backdrop {
+  /* ============ CREATION MODAL ============ */
+  .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(10, 9, 8, 0.7);
+    background: rgba(15, 14, 12, 0.7);
     backdrop-filter: blur(8px);
-    display: none;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+  .creation-modal {
+    background: #fff;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 16px;
+    padding: 48px;
+    border: 1px solid var(--rule);
+    box-shadow: 0 40px 100px -20px rgba(0,0,0,0.4);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-close-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 100;
-    padding: 24px;
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-  .modal-backdrop.active { display: flex; opacity: 1; }
-  .modal {
-    background: #fff;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 540px;
-    padding: 40px;
-    position: relative;
-    transform: scale(0.96);
-    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-  .modal-backdrop.active .modal { transform: scale(1); }
-  .modal-close {
-    position: absolute;
-    top: 20px; right: 20px;
-    font-size: 24px;
     color: var(--ink-soft);
-    line-height: 1;
     transition: 0.2s;
+    background: transparent;
   }
-  .modal-close:hover { color: var(--ink); }
-  .modal h2 { font-family: 'Fraunces', serif; font-size: 32px; margin-bottom: 24px; }
-  
-  .field { margin-bottom: 16px; }
+  .modal-close-btn:hover { background: var(--surface-dim); color: var(--ink); }
+
+  .modal-header { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--rule); }
+  .modal-header h2 { font-family: 'Fraunces', serif; font-size: 28px; }
+
+  /* Form Elements */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .field-full { grid-column: span 2; }
+  .field { position: relative; }
+
   .field label {
     display: block;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: var(--ink-soft);
   }
-  .field input, .field select {
+
+  input, textarea, select {
     width: 100%;
-    padding: 12px 16px;
+    padding: 14px 16px;
     border: 1px solid var(--rule);
     border-radius: 6px;
     background: var(--surface);
@@ -232,31 +258,85 @@
     color: var(--ink);
     transition: 0.2s;
   }
-  .field input:focus, .field select:focus {
+  input:focus, textarea:focus {
     outline: none;
     border-color: var(--terracotta);
+    box-shadow: 0 0 0 3px rgba(201, 100, 66, 0.1);
   }
 
-  .btn-submit {
-    width: 100%;
+  /* Dropdown Styling */
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: #ffffff;
+    border: 1px solid #caced1;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+  .dropdown-menu.active { display: block; }
+  .dropdown-item { padding: 10px 16px; font-size: 13px; cursor: pointer; }
+  .dropdown-item:hover { background: #f0f4f8; }
+
+  /* Error States */
+  .field.required-error input, 
+  .field.required-error textarea { border-color: var(--error); background: #fff8f8; }
+  .error-msg {
+    color: var(--error);
+    font-size: 11px;
+    margin-top: 6px;
+    display: none;
+    font-weight: 600;
+  }
+  .field.required-error .error-msg { display: block; }
+
+  /* Matching Tags */
+  .tags-input-container {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--surface);
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag-pill {
     background: var(--ink);
     color: var(--cream);
-    padding: 14px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 13px;
-    margin-top: 12px;
-    transition: 0.2s;
   }
-  .btn-submit:hover { background: var(--terracotta); }
+  .tag-pill button { color: var(--accent); font-weight: 700; }
+  .tag-pill button:hover { color: #fff; }
+
+  .tags-input-field {
+    flex-grow: 1;
+    border: none !important;
+    background: transparent !important;
+    padding: 6px !important;
+    font-size: 14px;
+    min-width: 150px;
+  }
+  .tags-input-field:focus { box-shadow: none !important; }
+
+  .modal-actions { display: flex; justify-content: flex-end; gap: 16px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule); }
+  .btn-close { background: var(--surface-dim); padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s;}
+  .btn-close:hover { background: #d4cfc5; }
 
 </style>
 </head>
 <body>
 
- <aside class="sidebar">
+  <aside class="sidebar">
     <a href="index.html" class="brand">Find My<em>Student</em></a>
     <a href="accountProfessor.html" class="nav-item">
       <div class="avatar"></div>
@@ -286,7 +366,7 @@
       <button class="btn-create" onclick="openModal()">+ Create Position</button>
     </div>
 
-    <main class="main-content">
+    <main class="main-content" id="mainPostingsContainer">
       
       <div class="posting-island">
         <div class="post-info">
@@ -328,7 +408,7 @@
         </div>
       </div>
 
-      <div class="posting-island" style="opacity: 0.7; background: #fafafa;">
+      <div class="posting-island draft-item" style="opacity: 0.7; background: #fafafa;">
         <div class="post-info">
           <div class="status-badge status-draft">Draft</div>
           <h3>Advanced Murine Modeling</h3>
@@ -354,135 +434,195 @@
     </main>
   </div>
 
-  <div class="modal-backdrop" id="createModal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <h2>Post a Position</h2>
-      
-      <div class="field">
-        <label>University / College</label>
-        <input type="text" id="posUni" placeholder="e.g. Los Angeles City College">
+  <div class="modal-overlay" id="creationModal">
+    <div class="creation-modal">
+      <button class="modal-close-btn" onclick="closeModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <div class="modal-header">
+        <h2>Create New Position</h2>
       </div>
-      
-      <div class="field">
-        <label>Position Type</label>
-        <select id="posType">
-          <option value="research">Research</option>
-          <option value="internship">Internship</option>
-          <option value="ta">Teaching Assistant</option>
-        </select>
+
+      <div class="field-grid">
+        <div class="field field-full">
+          <label>Position Title *</label>
+          <input type="text" id="newTitle" placeholder="e.g. Undergraduate Research Assistant" oninput="validateModal()">
+          <div class="error-msg">Title is required</div>
+        </div>
+
+        <div class="field">
+          <label>Institution *</label>
+          <input type="text" id="newUni" placeholder="Select your university..." autocomplete="off" oninput="handleUniDropdown(); validateModal()">
+          <div class="dropdown-menu" id="newUniDropdown"></div>
+          <div class="error-msg">Institution is required</div>
+        </div>
+
+        <div class="field">
+          <label>Department / Lab Name *</label>
+          <input type="text" id="newDept" placeholder="e.g. Molecular Biology" oninput="validateModal()">
+          <div class="error-msg">Department is required</div>
+        </div>
+
+        <div class="field field-full">
+          <label>Hours per Week *</label>
+          <input type="text" id="newHours" placeholder="e.g. 10-15 hrs/wk" oninput="validateModal()">
+          <div class="error-msg">Hours are required</div>
+        </div>
+
+        <div class="field field-full">
+          <label>Description *</label>
+          <textarea id="newDesc" placeholder="Describe the role's responsibilities..." style="height: 120px;" oninput="validateModal()"></textarea>
+          <div class="error-msg">Description is required</div>
+        </div>
       </div>
 
       <div class="field">
-        <label>Title</label>
-        <input type="text" id="posTitle" placeholder="e.g. NMR analysis of halogenated aromatic compounds">
+        <label>Matching Tags (Add qualifications or skills to find)</label>
+        <div class="tags-input-container" id="tagsContainer">
+          <input type="text" class="tags-input-field" placeholder="Add a qualification (e.g. PCR, Python)" id="tagInput">
+        </div>
       </div>
 
-      <div class="field">
-        <label>Department / Lab Code</label>
-        <input type="text" id="posDept" placeholder="e.g. Chemistry 212">
+      <div class="modal-actions">
+        <button class="btn-close" onclick="closeModal()">Cancel</button>
+        <button class="btn-create" id="btnSavePost" onclick="saveAndPost()" disabled>Save & Post</button>
       </div>
-
-      <div class="field">
-        <label>Tags (Comma Separated)</label>
-        <input type="text" id="posTags" placeholder="e.g. Organic Chem, Lab, 6hr/wk">
-      </div>
-
-      <button class="btn-submit" onclick="submitPosition()">Publish Position</button>
     </div>
   </div>
 
-<script>
-  // Setup Modal defaults based on User's local storage
-  document.addEventListener('DOMContentLoaded', () => {
-    const savedUni = localStorage.getItem('fms_uni');
-    if (savedUni) {
-      document.getElementById('posUni').value = savedUni;
+  <script>
+    const UNIVERSITIES = ["Stanford University", "Harvard University", "University of California, Irvine (UCI)", "Florida National University", "Massachusetts Institute of Technology (MIT)", "California Institute of Technology (Caltech)", "University of California, Los Angeles (UCLA)", "University of Southern California (USC)", "Los Angeles City College (LACC)"];
+
+    // Modal Visibility
+    function openModal() {
+      document.getElementById('creationModal').classList.add('active');
+      validateModal(); // Ensure state is correct on open
     }
-  });
 
-  function openModal() {
-    document.getElementById('createModal').classList.add('active');
-  }
+    function closeModal() {
+      document.getElementById('creationModal').classList.remove('active');
+      // Reset fields on close
+      document.getElementById('newTitle').value = '';
+      document.getElementById('newUni').value = '';
+      document.getElementById('newDept').value = '';
+      document.getElementById('newHours').value = '';
+      document.getElementById('newDesc').value = '';
+      document.getElementById('tagsContainer').querySelectorAll('.tag-pill').forEach(el => el.remove());
+      
+      // Remove error borders
+      document.querySelectorAll('.field.required-error').forEach(el => el.classList.remove('required-error'));
+      document.getElementById('newUniDropdown').classList.remove('active');
+    }
 
-  function closeModal() {
-    document.getElementById('createModal').classList.remove('active');
-  }
+    // Modal Validation
+    function validateModal() {
+      const fields = ['newTitle', 'newUni', 'newDept', 'newHours', 'newDesc'];
+      let allValid = true;
 
-  // Close modal when clicking on the dark backdrop
-  document.getElementById('createModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('createModal')) {
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        const parent = el.closest('.field');
+        if (el.value.trim() === '') {
+          parent.classList.add('required-error');
+          allValid = false;
+        } else {
+          parent.classList.remove('required-error');
+        }
+      });
+
+      document.getElementById('btnSavePost').disabled = !allValid;
+    }
+
+    // Dropdown Logic
+    function handleUniDropdown() {
+      const input = document.getElementById('newUni');
+      const dropdown = document.getElementById('newUniDropdown');
+      const query = input.value.toLowerCase();
+      dropdown.innerHTML = '';
+
+      if (query.length > 0) {
+        const matches = UNIVERSITIES.filter(u => u.toLowerCase().includes(query));
+        matches.forEach(match => {
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          item.textContent = match;
+          item.onclick = () => { 
+            input.value = match; 
+            dropdown.classList.remove('active'); 
+            validateModal(); 
+          };
+          dropdown.appendChild(item);
+        });
+        dropdown.classList.add('active');
+      } else {
+        dropdown.classList.remove('active');
+      }
+    }
+
+    // Hide dropdown if clicked outside
+    document.addEventListener('click', (e) => {
+      const uniDrop = document.getElementById('newUniDropdown');
+      if (uniDrop && !e.target.closest('#newUni') && !e.target.closest('#newUniDropdown')) {
+        uniDrop.classList.remove('active');
+      }
+    });
+
+    // Tags Input Logic
+    document.getElementById('tagInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = this.value.trim();
+        if (val) {
+          const container = document.getElementById('tagsContainer');
+          const pill = document.createElement('div');
+          pill.className = 'tag-pill';
+          pill.innerHTML = `${val} <button onclick="this.parentElement.remove()">✕</button>`;
+          container.insertBefore(pill, this);
+          this.value = '';
+        }
+      }
+    });
+
+    // Save and Inject Posting
+    function saveAndPost() {
+      if (document.getElementById('btnSavePost').disabled) return;
+
+      const title = document.getElementById('newTitle').value.trim();
+      const dept = document.getElementById('newDept').value.trim();
+      const hours = document.getElementById('newHours').value.trim();
+      
+      // Create new HTML Node
+      const newCardHTML = `
+        <div class="posting-island">
+          <div class="post-info">
+            <div class="status-badge status-active">Active</div>
+            <h3>${title}</h3>
+            <p>${dept} • ${hours}</p>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Applicants</div>
+            <div class="stat-mini-value">0</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Qualified Matches</div>
+            <div class="stat-mini-value" style="color: var(--success);">0</div>
+          </div>
+          <div class="actions">
+            <button class="btn-manage">Manage Roll →</button>
+            <button class="btn-manage" style="color: var(--ink-soft);">Edit Details</button>
+          </div>
+        </div>
+      `;
+
+      // Find the draft item to insert before it
+      const draftItem = document.querySelector('.draft-item');
+      draftItem.insertAdjacentHTML('beforebegin', newCardHTML);
+
+      // Close and clear modal
       closeModal();
     }
-  });
-
-  function submitPosition() {
-    // 1. Gather form values
-    const type = document.getElementById('posType').value;
-    const title = document.getElementById('posTitle').value;
-    const dept = document.getElementById('posDept').value;
-    const tagsInput = document.getElementById('posTags').value;
-    const uni = document.getElementById('posUni').value;
-
-    // Convert comma string into array
-    const tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag);
-
-    // 2. Fetch Professor name from local storage & format it
-    const fname = localStorage.getItem('fms_fname') || 'Firstname';
-    const lname = localStorage.getItem('fms_lname') || 'Lastname';
-    // Format to "Dr. F. Lastname"
-    const firstInitial = fname.charAt(0).toUpperCase();
-    const profFormattedName = `Dr. ${firstInitial}. ${lname}`;
-
-    // 3. Construct Data Object matching index.html format
-    const newPositionObj = {
-      type: type,
-      title: title,
-      prof: profFormattedName,
-      dept: dept,
-      tags: tagsArray,
-      posted: 'Now',
-      uni: uni
-    };
-
-    // Log the properly formatted object for the mock database
-    console.log("New Mock Data Object Created:", newPositionObj);
-
-    // 4. Visually add it to the Professor Dashboard
-    const mainContent = document.querySelector('.main-content');
-    const draftPlaceholder = document.querySelector('.draft-placeholder');
-
-    const newIsland = document.createElement('div');
-    newIsland.className = 'posting-island';
-    newIsland.innerHTML = `
-      <div class="post-info">
-        <div class="status-badge status-active">Active</div>
-        <h3>${title || 'Untitled Position'}</h3>
-        <p>${dept || 'General Dept.'} • ${tagsArray.join(' / ') || 'No tags'}</p>
-      </div>
-      <div class="stat-mini">
-        <div class="stat-mini-label">Applicants</div>
-        <div class="stat-mini-value">0</div>
-      </div>
-      <div class="stat-mini">
-        <div class="stat-mini-label">Qualified Matches</div>
-        <div class="stat-mini-value" style="color: var(--success);">0</div>
-      </div>
-      <div class="actions">
-        <button class="btn-manage">Manage Roll →</button>
-        <button class="btn-manage" style="color: var(--ink-soft);">Edit Details</button>
-      </div>
-    `;
-
-    mainContent.insertBefore(newIsland, draftPlaceholder);
-
-    // Reset fields & close
-    document.getElementById('posTitle').value = '';
-    document.getElementById('posDept').value = '';
-    document.getElementById('posTags').value = '';
-    closeModal();
-  }
-</script>
+  </script>
 
 </body>
 </html>
