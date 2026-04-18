@@ -885,9 +885,9 @@
       <h3 id="formTitle">Log <em>in</em></h3>
       <p class="lead" id="formLead">Continue to your FindMyProfessor dashboard.</p>
 
-      <div class="field">
+     <div class="field">
         <label>University Email</label>
-        <input type="email" placeholder="you@university.edu" />
+        <input type="email" id="loginEmail" placeholder="you@university.edu" />
       </div>
       <div class="field">
         <label>Password</label>
@@ -901,7 +901,7 @@
         </select>
       </div>
 
-      <button class="form-submit" id="formSubmit">Log in</button>
+      <button class="form-submit" id="loginSubmitBtn">Log in</button>
 
       <div class="form-footer" id="formFooter">
         New to FindMyProfessor? <a onclick="closeModals(); openSignup();">Create an account</a>
@@ -1177,12 +1177,69 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModals();
 });
 
-// Prevent form submit default
-document.getElementById('formSubmit').addEventListener('click', (e) => {
-  e.preventDefault();
-  closeModals();
-  alert('Demo — account flow would continue here.');
-});
+
 </script>
+  <script type="module">
+  import { supabase } from './supabase.js';
+
+  const loginBtn = document.getElementById('loginSubmitBtn');
+  const loginEmailInput = document.getElementById('loginEmail');
+
+  loginBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    
+    const email = loginEmailInput.value.trim();
+    if (!email) {
+      alert("Please enter your university email.");
+      return;
+    }
+
+    // UX: Show a loading state
+    const originalText = loginBtn.textContent;
+    loginBtn.textContent = "Verifying...";
+    loginBtn.disabled = true;
+
+    try {
+      // 1. Query Supabase to find a matching email
+      const { data, error } = await supabase
+        .from('student_signups')
+        .select('*')
+        .eq('email', email)
+        .maybeSingle(); // Gets one record, or null if none exist
+
+      if (error) throw error;
+
+      if (!data) {
+        alert("Account not found. Please check your email or sign up.");
+        loginBtn.textContent = originalText;
+        loginBtn.disabled = false;
+        return;
+      }
+
+      // 2. We found them! Load their Supabase data into localStorage
+      localStorage.setItem('fms_fname', data.first_name);
+      localStorage.setItem('fms_lname', data.last_name);
+      localStorage.setItem('fms_uni', data.university);
+      
+      // If they have a major, save it (students only)
+      if (data.major) {
+        localStorage.setItem('fms_major', data.major);
+      }
+
+      // 3. Close the modal and redirect to the dashboard
+      document.getElementById('loginModal').classList.remove('active');
+      document.body.style.overflow = '';
+      
+      window.location.href = 'studentPortal.html';
+
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Error connecting to the database.");
+      loginBtn.textContent = originalText;
+      loginBtn.disabled = false;
+    }
+  });
+</script>
+  
 </body>
 </html>
