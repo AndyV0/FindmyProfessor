@@ -570,6 +570,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    text-decoration: none; /* Inherits correctly but explicitly ensuring no underline */
   }
 
   /* ============ MODAL ============ */
@@ -1128,7 +1129,7 @@ function renderPositions(list, filter) {
       </div>
       <div class="position-foot">
         <span>Posted ${p.posted}</span>
-        <span class="apply">Apply →</span>
+        <a href="signup.html" class="apply">Apply →</a>
       </div>
     </div>
   `).join('');
