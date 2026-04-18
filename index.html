@@ -349,8 +349,13 @@
     border-top: 1px solid rgba(23, 20, 17, 0.08); font-family: 'JetBrains Mono', monospace;
     font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
   }
-  .position-foot .apply { color: var(--terracotta); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-  .position-foot .apply:hover { text-decoration: underline; }
+  
+  /* Buttons at bottom of card */
+  .action-group { display: flex; gap: 16px; align-items: center; }
+  .apply-btn { color: var(--ink); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .apply-btn:hover { text-decoration: underline; }
+  .delete-btn { color: #c94a42; font-weight: 500; font-size: 9px; transition: color 0.2s;}
+  .delete-btn:hover { color: red; text-decoration: underline; }
 
   /* ============ MODAL ============ */
   .modal-backdrop {
@@ -489,7 +494,7 @@
   <div class="footer-strip">
     <span>[01] — Index Spring '26</span>
     <span>Built for students & faculty</span>
-    <span>v1.2.0 — Modular Backend</span>
+    <span>v1.3.0 — Delete Admin Added</span>
   </div>
 </div>
 
@@ -550,13 +555,6 @@
         <label>Password</label>
         <input type="password" placeholder="••••••••" />
       </div>
-      <div class="field" id="roleField" style="display:none">
-        <label>Role</label>
-        <select>
-          <option>Student</option>
-          <option>Professor</option>
-        </select>
-      </div>
 
       <button class="form-submit" id="formSubmit">Log in</button>
 
@@ -602,8 +600,8 @@
 </div>
 
 <script type="module">
-// IMPORT FIREBASE LOGIC FROM OUR NEW SHARED MODULE
-import { db, collection, getDocs, query, where, addDoc, serverTimestamp } from './firebase.js';
+// IMPORT FIREBASE LOGIC INCLUDING DELETE TOOLS
+import { db, collection, getDocs, query, where, addDoc, serverTimestamp, deleteDoc, doc } from './firebase.js';
 
 // Global state
 let currentPositions = [];
@@ -670,21 +668,19 @@ document.addEventListener('click', (e) => {
 
 // ========== RESULTS VIEW & FILTERS ==========
 window.selectUniversity = async function(id, uniName) {
-  currentUniId = id; // Store for later when adding roles
+  currentUniId = id; 
   
   const nameParts = uniName.split(' ');
   const lastWord = nameParts.pop();
   document.getElementById('uniTitle').innerHTML = `${nameParts.join(' ')} <em>${lastWord}</em>`;
   document.getElementById('posCount').textContent = "...";
 
-  // UI Transitions
   document.getElementById('heroView').style.display = 'none';
   document.getElementById('resultsView').classList.add('active');
   window.scrollTo(0, 0);
   dropdown.classList.remove('active');
 
   try {
-    // Fetch Positions
     const posCol = collection(db, "positions");
     const q = query(posCol, where("uniId", "==", id));
     const posSnapshot = await getDocs(q);
@@ -721,7 +717,10 @@ function renderPositions(list, filter) {
       </div>
       <div class="position-foot">
         <span>Posted ${p.posted || 'Recently'}</span>
-        <span class="apply" onclick="window.applyForRole('${p.id}')">Apply →</span>
+        <div class="action-group">
+          <span class="delete-btn" onclick="window.deleteRole('${p.id}')">Delete ✕</span>
+          <span class="apply-btn" onclick="window.applyForRole('${p.id}')">Apply →</span>
+        </div>
       </div>
     </div>
   `).join('');
@@ -750,11 +749,6 @@ window.openSignup = function() {
 
 window.openLogin = function() {
   window.closeModals();
-  document.getElementById('formTitle').innerHTML = 'Log <em>in</em>';
-  document.getElementById('formLead').textContent = 'Continue to your FindMyProfessor dashboard.';
-  document.getElementById('formSubmit').textContent = 'Log in';
-  document.getElementById('roleField').style.display = 'none';
-  document.getElementById('formFooter').innerHTML = 'New to FindMyProfessor? <a onclick="window.closeModals(); window.openSignup();">Create an account</a>';
   document.getElementById('loginModal').classList.add('active');
   document.body.style.overflow = 'hidden';
 };
@@ -769,12 +763,27 @@ window.closeModals = function() {
   document.body.style.overflow = '';
 };
 
-// Application Placeholder
 window.applyForRole = function(positionId) {
-  alert("Application process triggered for role ID: " + positionId + "\n\n(This will be connected to the 'applications' database next!)");
+  alert("Application process triggered for role ID: " + positionId);
 };
 
-// Modal Dismiss
+// NEW: DELETE FUNCTIONALITY
+window.deleteRole = async function(roleId) {
+  if (!confirm("Are you sure you want to completely delete this ghost role from the database?")) return;
+  
+  try {
+    // Delete from Firestore
+    await deleteDoc(doc(db, "positions", roleId));
+    
+    // Refresh the UI to reflect the deletion
+    const uniTitleText = document.getElementById('uniTitle').textContent;
+    window.selectUniversity(currentUniId, uniTitleText);
+  } catch (error) {
+    console.error("Error deleting document:", error);
+    alert("Failed to delete the role. Check your console for details.");
+  }
+};
+
 document.querySelectorAll('.modal-backdrop').forEach(m => {
   m.addEventListener('click', (e) => {
     if (e.target === m) window.closeModals();
@@ -782,12 +791,6 @@ document.querySelectorAll('.modal-backdrop').forEach(m => {
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') window.closeModals();
-});
-
-document.getElementById('formSubmit').addEventListener('click', (e) => {
-  e.preventDefault();
-  window.closeModals();
-  alert('Demo — account flow would continue here.');
 });
 
 // ========== POST A NEW ROLE LOGIC ==========
@@ -814,14 +817,12 @@ document.getElementById('submitNewRole').addEventListener('click', async () => {
       createdAt: serverTimestamp()
     });
 
-    // Reset Form
     window.closeModals();
     document.getElementById('newRoleTitle').value = "";
     document.getElementById('newRoleProf').value = "";
     document.getElementById('newRoleDept').value = "";
     submitBtn.textContent = "Publish Role";
     
-    // Refresh the UI to show the new role immediately
     const uniTitleText = document.getElementById('uniTitle').textContent;
     window.selectUniversity(currentUniId, uniTitleText);
 
