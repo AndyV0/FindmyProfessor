@@ -507,18 +507,31 @@
     else if (isTyping) el.classList.add('invalid');
   }
 
-  function finish() {
-    if (document.getElementById('submitBtn').classList.contains('ready')) {
-      if (selectedRole === 'student') {
-        window.location.href = 'studentPortal.html';
-      } else if (selectedRole === 'professor') {
-        // lead to professor portal or a success message
-        alert("Professor account created! Redirecting to faculty dashboard...");
-        window.location.href = 'professorPortal.html'; // Adjust as needed
-      }
+function finish() {
+  if (document.getElementById('submitBtn').classList.contains('ready')) {
+    
+    // Save common fields to localStorage
+    localStorage.setItem('role', selectedRole);
+    localStorage.setItem('fname', document.getElementById('fname').value.trim());
+    localStorage.setItem('lname', document.getElementById('lname').value.trim());
+    localStorage.setItem('uni', document.getElementById('uni').value.trim());
+    localStorage.setItem('email', document.getElementById('email').value.trim());
+
+    if (selectedRole === 'student') {
+      window.location.href = 'studentPortal.html';
+    } else if (selectedRole === 'professor') {
+      
+      // Save professor-specific fields to localStorage
+      localStorage.setItem('dept', document.getElementById('dept').value.trim());
+      localStorage.setItem('title', document.getElementById('title').value);
+      localStorage.setItem('facultyId', document.getElementById('facultyId').value.trim());
+      localStorage.setItem('office', document.getElementById('office').value.trim());
+
+      // Redirect to the professor account page
+      window.location.href = 'accountProfessor.html'; 
     }
   }
-</script>
+}
 
 </body>
 </html>
