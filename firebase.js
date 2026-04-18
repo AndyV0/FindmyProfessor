@@ -18,5 +18,5 @@ const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
 
-// Export the database and the necessary Firestore functions
-export { db, collection, getDocs, query, where, addDoc, serverTimestamp };
+// Export the database and the necessary Firestore functions. As well as delete tool
+export { db, collection, getDocs, query, where, addDoc, serverTimestamp, deleteDoc, doc };
