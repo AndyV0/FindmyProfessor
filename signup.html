@@ -52,7 +52,7 @@
     background: var(--surface);
     color: var(--ink);
     border-radius: 12px;
-    overflow: visible;
+    overflow: visible; /* Changed to visible for dropdown */
     box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
@@ -60,6 +60,7 @@
     transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
+  /* STEP 1: ROLE SELECTION */
   .step-1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -103,6 +104,7 @@
   h2 em { font-style: italic; color: var(--terracotta); }
   .professor h2 em { color: var(--accent); }
 
+  /* STEP 2: ACTUAL FORM */
   .step-2 {
     display: none;
     padding: 50px 60px;
@@ -132,18 +134,19 @@
     color: var(--ink-soft);
   }
 
-  input, select {
+  input {
     width: 100%;
     padding: 14px 16px;
     border: 1px solid var(--rule);
     border-radius: 6px;
     background: transparent;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 15px;
     transition: 0.2s;
   }
-  input:focus, select:focus { outline: none; border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(201, 100, 66, 0.1); }
+  input:focus { outline: none; border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(201, 100, 66, 0.1); }
 
+  /* Error Notices */
   .error-notice {
     font-size: 12px;
     color: var(--error);
@@ -159,13 +162,14 @@
     75% { transform: translateX(4px); }
   }
 
+  /* Dropdown Styles */
   .dropdown-menu {
     position: absolute;
     top: calc(100% + 4px);
     left: 0; right: 0;
     background: var(--surface);
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: 6px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     max-height: 200px;
     overflow-y: auto;
@@ -183,6 +187,7 @@
   .dropdown-item:last-child { border-bottom: none; }
   .dropdown-item:hover { background: rgba(23, 20, 17, 0.05); }
 
+  /* Validation Checklist */
   .checklist {
     margin-top: 12px;
     list-style: none;
@@ -201,9 +206,18 @@
   }
 
   .check-item svg { transition: all 0.3s ease; }
-  .check-item.valid { color: var(--success); text-shadow: 0 0 8px rgba(122, 139, 109, 0.4); }
+
+  /* Glow States */
+  .check-item.valid {
+    color: var(--success);
+    text-shadow: 0 0 8px rgba(122, 139, 109, 0.4);
+  }
   .check-item.valid svg { color: var(--success); filter: drop-shadow(0 0 4px var(--success)); }
-  .check-item.invalid { color: var(--error); text-shadow: 0 0 8px rgba(201, 66, 66, 0.4); }
+
+  .check-item.invalid {
+    color: var(--error);
+    text-shadow: 0 0 8px rgba(201, 66, 66, 0.4);
+  }
   .check-item.invalid svg { color: var(--error); filter: drop-shadow(0 0 4px var(--error)); }
 
   .btn-submit {
@@ -228,6 +242,7 @@
     opacity: 1;
     background: var(--terracotta);
   }
+  .btn-submit.ready:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201, 100, 66, 0.3); }
 
   .back-btn {
     position: absolute;
@@ -241,8 +256,7 @@
     border: none;
     color: var(--ink-soft);
   }
-
-  #professorFields { display: none; margin-top: 20px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  .back-btn:hover { color: var(--ink); }
 
   @media (max-width: 768px) {
     .step-1 { grid-template-columns: 1fr; }
@@ -263,7 +277,7 @@
         <div>
           <div class="role-eyebrow">Option 01</div>
           <h2>I am a <em>Student</em></h2>
-          <p style="font-size: 14px; opacity: 0.7;">Discover and apply for research opportunities.</p>
+          <p style="font-size: 14px; opacity: 0.7;">Browse and apply for campus opportunities.</p>
         </div>
         <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue →</div>
       </button>
@@ -272,7 +286,7 @@
         <div>
           <div class="role-eyebrow">Option 02</div>
           <h2>I am a <em>Professor</em></h2>
-          <p style="font-size: 14px; opacity: 0.7;">Post roles and manage student applicants.</p>
+          <p style="font-size: 14px; opacity: 0.7;">Post positions and manage applicants.</p>
         </div>
         <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue →</div>
       </button>
@@ -305,37 +319,7 @@
       <div class="field">
         <label>University Email *</label>
         <input type="email" id="email" placeholder="name@university.edu" oninput="validateForm()">
-        <div class="error-notice" id="emailError">⚠ Please enter a valid university email.</div>
-      </div>
-
-      <div id="professorFields">
-        <div class="field-row">
-          <div class="field">
-            <label>Department *</label>
-            <input type="text" id="dept" placeholder="e.g. Neurobiology" oninput="validateForm()">
-          </div>
-          <div class="field">
-            <label>Title *</label>
-            <select id="title" onchange="validateForm()">
-              <option value="">Select Title</option>
-              <option>Assistant Professor</option>
-              <option>Associate Professor</option>
-              <option>Full Professor</option>
-              <option>Department Chair</option>
-              <option>Lab Director</option>
-            </select>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Faculty ID *</label>
-            <input type="text" id="facultyId" placeholder="Verification ID" oninput="validateForm()">
-          </div>
-          <div class="field">
-            <label>Office Location *</label>
-            <input type="text" id="office" placeholder="Bldg/Room" oninput="validateForm()">
-          </div>
-        </div>
+        <div class="error-notice" id="emailError">⚠ Please enter a valid email format.</div>
       </div>
 
       <div class="field">
@@ -386,19 +370,12 @@
     const s2 = document.getElementById('step2');
     s2.style.display = 'block';
     
-    const profFields = document.getElementById('professorFields');
-    
-    if (role === 'student') {
-      document.getElementById('formSub').textContent = 'Joining as a student to discover research.';
-      profFields.style.display = 'none';
-    } else {
-      document.getElementById('formSub').textContent = 'Joining as faculty to post and manage positions.';
-      profFields.style.display = 'block';
-    }
+    document.getElementById('formSub').textContent = role === 'student' 
+      ? 'Joining as a student to discover research.' 
+      : 'Joining as faculty to post positions.';
     
     document.getElementById('signupCard').style.maxWidth = '540px';
     document.getElementById('signupCard').style.margin = '0 auto';
-    validateForm();
   }
 
   function goBack() {
@@ -407,6 +384,7 @@
     document.getElementById('signupCard').style.maxWidth = '900px';
   }
 
+  // University Dropdown Logic
   function handleUniInput() {
     const input = document.getElementById('uni').value.toLowerCase();
     const dropdown = document.getElementById('uniDropdown');
@@ -439,6 +417,7 @@
     validateForm();
   }
 
+  // Close dropdown when clicking outside
   document.addEventListener('click', (e) => {
     if (!e.target.closest('#uni') && !e.target.closest('#uniDropdown')) {
       document.getElementById('uniDropdown').classList.remove('active');
@@ -473,25 +452,22 @@
     updateCheck('hasNum', numValid, pass.length > 0);
     updateCheck('hasSym', symValid, pass.length > 0);
 
-    const passwordsMatch = pass === confirmPass && pass.length > 0;
+    // Confirm Password Match
     const matchError = document.getElementById('matchError');
+    const passwordsMatch = pass === confirmPass && pass.length > 0;
+    
     if (confirmPass.length > 0 && !passwordsMatch) {
       matchError.classList.add('active');
+      document.getElementById('confirmPassword').style.borderColor = "var(--error)";
+      document.getElementById('confirmPassword').style.boxShadow = "0 0 0 4px rgba(201, 66, 66, 0.1)";
     } else {
       matchError.classList.remove('active');
+      document.getElementById('confirmPassword').style.borderColor = passwordsMatch ? "var(--success)" : "var(--rule)";
+      document.getElementById('confirmPassword').style.boxShadow = "none";
     }
 
-    // Professor specific validation
-    let profValid = true;
-    if (selectedRole === 'professor') {
-      const dept = document.getElementById('dept').value.trim();
-      const title = document.getElementById('title').value;
-      const fid = document.getElementById('facultyId').value.trim();
-      const office = document.getElementById('office').value.trim();
-      profValid = (dept && title && fid && office);
-    }
-
-    if (fname && lname && uni && emailValid && lenValid && numValid && symValid && passwordsMatch && profValid) {
+    // Final form check
+    if (fname && lname && uni && emailValid && lenValid && numValid && symValid && passwordsMatch) {
       btn.classList.add('ready');
       btn.disabled = false;
     } else {
@@ -503,8 +479,12 @@
   function updateCheck(id, isValid, isTyping) {
     const el = document.getElementById(id);
     el.classList.remove('valid', 'invalid');
-    if (isValid) el.classList.add('valid');
-    else if (isTyping) el.classList.add('invalid');
+    
+    if (isValid) {
+      el.classList.add('valid'); // Glows Green
+    } else if (isTyping) {
+      el.classList.add('invalid'); // Glows Red
+    }
   }
 
   function finish() {
@@ -512,9 +492,9 @@
       if (selectedRole === 'student') {
         window.location.href = 'studentPortal.html';
       } else if (selectedRole === 'professor') {
-        // lead to professor portal or a success message
-        alert("Professor account created! Redirecting to faculty dashboard...");
-        window.location.href = 'professorPortal.html'; // Adjust as needed
+        window.location.href = 'professorPortal.html';
+      } else {
+        window.location.href = 'studentPortal.html'; // Fallback
       }
     }
   }
@@ -522,6 +502,3 @@
 
 </body>
 </html>
-
-
-
