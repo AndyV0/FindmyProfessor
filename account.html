@@ -374,22 +374,22 @@
         <div class="field-grid">
           <div class="field">
             <label>First Name</label>
-            <input type="text" value="Alex">
+            <input type="text" id="fname" placeholder="e.g. Alex">
           </div>
           <div class="field">
             <label>Last Name</label>
-            <input type="text" value="Chen">
+            <input type="text" id="lname" placeholder="e.g. Chen">
           </div>
           
           <div class="field">
             <label>Current University</label>
-            <input type="text" id="currentUni" value="University of California, Irvine (UCI)" autocomplete="off" oninput="handleDropdown('currentUni', 'currentDropdown')" onfocus="handleDropdown('currentUni', 'currentDropdown')">
+            <input type="text" id="currentUni" placeholder="Select your university..." autocomplete="off" oninput="handleDropdown('currentUni', 'currentDropdown')" onfocus="handleDropdown('currentUni', 'currentDropdown')">
             <div class="dropdown-menu" id="currentDropdown"></div>
           </div>
           
           <div class="field">
             <label>Major / Degree</label>
-            <input type="text" value="Enter Major Here">
+            <input type="text" id="major" placeholder="e.g. Neurobiology, B.S.">
           </div>
         </div>
 
@@ -397,7 +397,7 @@
           
           <div class="field">
             <label>Previous Institutions (Optional)</label>
-            <input type="text" id="prevUni" value="Los Angeles City College (LACC)" autocomplete="off" oninput="handleDropdown('prevUni', 'prevDropdown')" onfocus="handleDropdown('prevUni', 'prevDropdown')">
+            <input type="text" id="prevUni" placeholder="e.g. Community College" autocomplete="off" oninput="handleDropdown('prevUni', 'prevDropdown')" onfocus="handleDropdown('prevUni', 'prevDropdown')">
             <div class="dropdown-menu" id="prevDropdown"></div>
           </div>
           
@@ -499,9 +499,21 @@
   </div>
 
 <script>
-  // Massive University Data for Hackathon Demo
-  // In a production environment, you would replace this array with a fetch() call 
-  // to a live database endpoint (e.g., hipolabs university API) inside the handleDropdown function.
+  // ==========================================
+  // RETRIEVE DATA FROM SIGNUP UPON PAGE LOAD
+  // ==========================================
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedFname = localStorage.getItem('fms_fname');
+    const savedLname = localStorage.getItem('fms_lname');
+    const savedUni = localStorage.getItem('fms_uni');
+    const savedMajor = localStorage.getItem('fms_major');
+
+    if (savedFname) document.getElementById('fname').value = savedFname;
+    if (savedLname) document.getElementById('lname').value = savedLname;
+    if (savedUni) document.getElementById('currentUni').value = savedUni;
+    if (savedMajor) document.getElementById('major').value = savedMajor;
+  });
+
   const UNIVERSITIES = [
     "Stanford University", "Massachusetts Institute of Technology (MIT)", "Harvard University",
     "California Institute of Technology (Caltech)", "University of Chicago", "Princeton University",
@@ -547,7 +559,6 @@
     // Filter list based on input
     const matches = UNIVERSITIES.filter(u => u.toLowerCase().includes(query));
 
-    // Show top 50 results maximum to prevent DOM lag on single-letter queries
     const topMatches = matches.slice(0, 50);
 
     if (topMatches.length > 0 && query.length > 0) {
@@ -555,13 +566,11 @@
         const item = document.createElement('div');
         item.className = 'dropdown-item';
         
-        // Highlight matching text bold
         const regex = new RegExp(`(${query})`, "gi");
         item.innerHTML = match.replace(regex, "<strong>$1</strong>");
         
-        // On click, set input value and close dropdown
         item.onmousedown = (e) => {
-          e.preventDefault(); // Prevents input from losing focus before click fires
+          e.preventDefault(); 
           input.value = match;
           dropdown.classList.remove('active');
         };
@@ -580,10 +589,10 @@
     const prevInput = document.getElementById('prevUni');
     const prevDrop = document.getElementById('prevDropdown');
 
-    if (e.target !== currentInput && e.target !== currentDrop && !currentDrop.contains(e.target)) {
+    if (currentDrop && e.target !== currentInput && e.target !== currentDrop && !currentDrop.contains(e.target)) {
       currentDrop.classList.remove('active');
     }
-    if (e.target !== prevInput && e.target !== prevDrop && !prevDrop.contains(e.target)) {
+    if (prevDrop && e.target !== prevInput && e.target !== prevDrop && !prevDrop.contains(e.target)) {
       prevDrop.classList.remove('active');
     }
   });
@@ -609,6 +618,13 @@
 
   // Save Animation
   function saveProfile() {
+    // Write changes back to localstorage
+    localStorage.setItem('fms_fname', document.getElementById('fname').value.trim());
+    localStorage.setItem('fms_lname', document.getElementById('lname').value.trim());
+    localStorage.setItem('fms_uni', document.getElementById('currentUni').value.trim());
+    localStorage.setItem('fms_major', document.getElementById('major').value.trim());
+
+    // Animate button
     const btn = document.querySelector('.top-bar .btn-save');
     const originalText = btn.textContent;
     btn.textContent = "Saved ✓";
