@@ -570,7 +570,6 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    text-decoration: none; /* Inherits correctly but explicitly ensuring no underline */
   }
 
   /* ============ MODAL ============ */
@@ -913,12 +912,13 @@
 
 <script>
 // ========== MOCK DATA ==========
+// Standardized names to exactly match dropdown arrays in forms
 const UNIVERSITIES = [
   { id: 'sdmc', name: 'San Diego Mesa College', loc: 'San Diego, CA', positions: 0 },
-  { id: 'laccd', name: 'Los Angeles City College', loc: 'Los Angeles, CA · LACC', positions: 5 },
-  { id: 'ucla', name: 'UCLA', loc: 'Los Angeles, CA', positions: 0 },
-  { id: 'ucb', name: 'UC Berkeley', loc: 'Berkeley, CA', positions: 0},
-  { id: 'usc', name: 'University of Southern California', loc: 'Los Angeles, CA', positions: 0 },
+  { id: 'laccd', name: 'Los Angeles City College (LACC)', loc: 'Los Angeles, CA', positions: 5 },
+  { id: 'ucla', name: 'University of California, Los Angeles (UCLA)', loc: 'Los Angeles, CA', positions: 0 },
+  { id: 'ucb', name: 'University of California, Berkeley (UCB)', loc: 'Berkeley, CA', positions: 0},
+  { id: 'usc', name: 'University of Southern California (USC)', loc: 'Los Angeles, CA', positions: 0 },
   { id: 'stanford', name: 'Stanford University', loc: 'Stanford, CA', positions: 0 },
   { id: 'smc', name: 'Santa Monica College', loc: 'Santa Monica, CA', positions: 0 },
   { id: 'ucsd', name: 'UC San Diego', loc: 'La Jolla, CA', positions: 0 },
@@ -982,6 +982,12 @@ const POSITIONS = {
   ],
 };
 
+// Fetch Custom Postings created by Professors
+function getCustomPositions(uniName) {
+  const customPostings = JSON.parse(localStorage.getItem('fms_custom_postings') || '[]');
+  return customPostings.filter(p => p.uniName && (p.uniName === uniName || uniName.includes(p.uniName) || p.uniName.includes(uniName)));
+}
+
 // ========== SEARCH ==========
 const searchInput = document.getElementById('uniSearch');
 const dropdown = document.getElementById('searchDropdown');
@@ -995,15 +1001,23 @@ function renderUniResults(list) {
     return;
   }
   dropdownHeader.textContent = `${list.length} ${list.length === 1 ? 'university' : 'universities'} found`;
-  results.innerHTML = list.map(u => `
+  
+  results.innerHTML = list.map(u => {
+    // Calculate total positions (hardcoded ones + ones from local storage)
+    const customCount = getCustomPositions(u.name).length;
+    const baseCount = (u.id === 'laccd') ? 5 : u.positions; // keeping hackathon demo logic
+    const totalCount = baseCount + customCount;
+
+    return `
     <button class="uni-item" data-id="${u.id}">
       <div>
         <div class="uni-name">${u.name}</div>
         <div class="uni-loc">${u.loc}</div>
       </div>
-      <div class="uni-meta"><strong>${u.positions}</strong>Open roles</div>
+      <div class="uni-meta"><strong>${totalCount}</strong>Open roles</div>
     </button>
-  `).join('');
+  `}).join('');
+  
   results.querySelectorAll('.uni-item').forEach(el => {
     el.addEventListener('click', () => selectUniversity(el.dataset.id));
   });
@@ -1030,23 +1044,19 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-wrap')) dropdown.classList.remove('active');
 });
 
-// MODIFIED: Find match on Enter. If no match, force empty state.
 searchInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault(); 
     const q = searchInput.value.trim().toLowerCase();
     if (!q) return;
 
-    // Check if what they typed matches a school
     const match = UNIVERSITIES.find(u =>
       u.name.toLowerCase().includes(q) || u.loc.toLowerCase().includes(q)
     );
 
     if (match) {
-      // If there's a match, use our select function
       selectUniversity(match.id);
     } else {
-      // If no match at all, show the text they typed but force 0 results
       const schoolName = searchInput.value.trim();
       const nameParts = schoolName.split(' ');
       const lastWord = nameParts.pop();
@@ -1058,7 +1068,7 @@ searchInput.addEventListener('keydown', (e) => {
       }
       
       document.getElementById('posCount').textContent = '0';
-      renderPositions([], 'all'); // Renders custom message
+      renderPositions([], 'all'); 
 
       document.getElementById('heroView').style.display = 'none';
       document.getElementById('resultsView').classList.add('active');
@@ -1077,11 +1087,13 @@ function selectUniversity(id) {
   document.getElementById('uniTitle').innerHTML =
     `${nameParts.join(' ')} <em>${lastWord}</em>`;
     
-  // MODIFIED: Only load real data if the ID is laccd. Otherwise, force 0.
-  const positionsToRender = (id === 'laccd') ? (POSITIONS[id] || []) : [];
+  // Combine base positions (laccd) with dynamically added ones from local storage
+  const basePositions = (id === 'laccd') ? (POSITIONS[id] || []) : [];
+  const customPositions = getCustomPositions(uni.name);
+  const allPositions = [...customPositions, ...basePositions];
   
-  document.getElementById('posCount').textContent = positionsToRender.length;
-  renderPositions(positionsToRender, 'all');
+  document.getElementById('posCount').textContent = allPositions.length;
+  renderPositions(allPositions, 'all');
 
   document.getElementById('heroView').style.display = 'none';
   document.getElementById('resultsView').classList.add('active');
@@ -1093,9 +1105,7 @@ function selectUniversity(id) {
     chip.onclick = () => {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-      // Ensure filters also only work on LACC
-      const filteredList = (id === 'laccd') ? (POSITIONS[id] || []) : [];
-      renderPositions(filteredList, chip.dataset.filter);
+      renderPositions(allPositions, chip.dataset.filter);
     };
   });
 }
@@ -1111,9 +1121,8 @@ function renderPositions(list, filter) {
   const grid = document.getElementById('positionsGrid');
   const filtered = filter === 'all' ? list : list.filter(p => p.type === filter);
 
-  // MODIFIED: Custom message for empty state
   if (!filtered.length) {
-    grid.innerHTML = '<div style="padding:60px;text-align:center;color:var(--ink-soft);grid-column:1/-1;font-size:16px;">No roles available for options</div>';
+    grid.innerHTML = '<div style="padding:60px;text-align:center;color:var(--ink-soft);grid-column:1/-1;font-size:16px;">No roles available for this selection.</div>';
     return;
   }
 
@@ -1129,7 +1138,7 @@ function renderPositions(list, filter) {
       </div>
       <div class="position-foot">
         <span>Posted ${p.posted}</span>
-        <a href="signup.html" class="apply">Apply →</a>
+        <span class="apply">Apply →</span>
       </div>
     </div>
   `).join('');
