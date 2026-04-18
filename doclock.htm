@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Documents — FindMyProfessor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Manrope:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #f4efe6;
+    --surface-dim: #e8e0d1;
+    --ink: #171411;
+    --ink-soft: #4a4339;
+    --cream: #f4efe6;
+    --cream-dim: rgba(244, 239, 230, 0.72);
+    --accent: #e8a733;
+    --terracotta: #c96442;
+    --success: #7a8b6d;
+    --rule: rgba(23, 20, 17, 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    width: 120px;
+    background: var(--bg);
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 600, 'SOFT' 20;
+    font-size: 14px;
+    line-height: 1.1;
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 0 12px;
+  }
+  .brand em { display: block; font-style: italic; color: var(--accent); }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 8px;
+    color: var(--cream-dim);
+    transition: all 0.2s;
+    cursor: pointer;
+    font-size: 12px;
+    gap: 6px;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { color: var(--cream); background: rgba(244, 239, 230, 0.05); }
+  .nav-item.active { color: var(--cream); border-left-color: var(--accent); background: rgba(244, 239, 230, 0.08); }
+  .nav-item svg { width: 24px; height: 24px; stroke-width: 1.5; }
+
+  .avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--surface-dim);
+    background-image: url('https://api.dicebear.com/7.x/notionists/svg?seed=Felix');
+    background-size: cover;
+    margin-bottom: 6px;
+    border: 2px solid transparent;
+    transition: border 0.2s;
+  }
+  .nav-item.active .avatar { border-color: var(--accent); }
+
+  /* ============ MAIN CONTENT ============ */
+  .layout-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .top-bar {
+    position: sticky;
+    top: 0;
+    background: rgba(244, 239, 230, 0.95);
+    backdrop-filter: blur(12px);
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--rule);
+    z-index: 10;
+  }
+  .top-bar h1 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 400, 'SOFT' 30;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+  }
+  .top-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .main-content {
+    padding: 40px 48px;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ============ UPLOAD ZONE ============ */
+  .upload-zone {
+    border: 2px dashed rgba(23, 20, 17, 0.2);
+    border-radius: 12px;
+    padding: 48px 32px;
+    text-align: center;
+    background: #fff;
+    transition: all 0.2s;
+    cursor: pointer;
+    margin-bottom: 48px;
+  }
+  .upload-zone:hover {
+    border-color: var(--terracotta);
+    background: #fdfaf5;
+  }
+  .upload-icon {
+    color: var(--terracotta);
+    margin-bottom: 16px;
+  }
+  .upload-zone h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .upload-zone p {
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .upload-zone .btn-upload {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: background 0.2s;
+  }
+  .upload-zone:hover .btn-upload { background: var(--terracotta); }
+
+  /* ============ DOCUMENT SECTIONS ============ */
+  .doc-section {
+    margin-bottom: 48px;
+  }
+  .doc-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .doc-section-header h2 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 500, 'SOFT' 20;
+    font-size: 22px;
+    color: var(--ink);
+  }
+  .doc-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--surface-dim);
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: var(--ink-soft);
+  }
+
+  /* File Rows */
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .file-row {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 16px 24px;
+    border-radius: 8px;
+    border: 1px solid rgba(23, 20, 17, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .file-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  }
+
+  .file-icon {
+    width: 40px; height: 40px;
+    background: var(--surface);
+    border-radius: 6px;
+    display: grid; place-items: center;
+    color: var(--terracotta);
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+  .file-info {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+  .file-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 16px;
+  }
+
+  .file-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 16px;
+  }
+  .file-actions button {
+    padding: 8px;
+    color: var(--ink-soft);
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .file-actions button:hover {
+    color: var(--ink);
+    background: var(--surface);
+  }
+  .file-actions .btn-delete:hover {
+    color: #c94242;
+    background: rgba(201, 66, 66, 0.1);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(23,20,17,0.15); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(23,20,17,0.25); }
+
+</style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <a href="#" class="brand">FindMy<em>Professor</em></a>
+    <a href="#" class="nav-item">
+      <div class="avatar"></div>
+      <span>Account</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      <span>Applications</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span>Messages</span>
+    </a>
+    <a href="#" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+      <span>Documents</span>
+    </a>
+  </aside>
+
+  <div class="layout-wrapper">
+    <div class="top-bar">
+      <h1>My Locker</h1>
+      <div class="top-meta">6 Files Stored</div>
+    </div>
+
+    <main class="main-content">
+      
+      <div class="upload-zone" onclick="alert('Demo: Opens file browser.')">
+        <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <h3>Securely upload a new document</h3>
+        <p>Drag and drop your files here, or click to browse.<br>Supports PDF, DOCX, PNG, and JPG up to 10MB.</p>
+        <button class="btn-upload">Select Files</button>
+      </div>
+
+      <section class="doc-section">
+        <div class="doc-section-header">
+          <h2>CVs & Resumes</h2>
+          <span class="doc-count">1 File</span>
+        </div>
+        <div class="file-list">
+          <div class="file-row">
+            <div class="file-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">Alex_Chen_CV_Neurobio_2026.pdf</div>
+              <div class="file-meta"><span>Added Apr 10, 2026</span><span>84 KB</span><span>Default</span></div>
+            </div>
+            <div class="file-actions">
+              <button title="View"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <button title="Download"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+              <button class="btn-delete" title="Delete"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <div class="doc-section-header">
+          <h2>Transcripts</h2>
+          <span class="doc-count">2 Files</span>
+        </div>
+        <div class="file-list">
+          <div class="file-row">
+            <div class="file-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">UCI_Unofficial_Transcript_Sp26.pdf</div>
+              <div class="file-meta"><span>Added Apr 12, 2026</span><span>1.2 MB</span></div>
+            </div>
+            <div class="file-actions">
+              <button title="View"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <button title="Download"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+              <button class="btn-delete" title="Delete"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            </div>
+          </div>
+          <div class="file-row">
+            <div class="file-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">LACC_Academic_Record_Transfer.pdf</div>
+              <div class="file-meta"><span>Added Jan 5, 2026</span><span>850 KB</span></div>
+            </div>
+            <div class="file-actions">
+              <button title="View"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <button title="Download"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+              <button class="btn-delete" title="Delete"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <div class="doc-section-header">
+          <h2>Cover Letters</h2>
+          <span class="doc-count">1 File</span>
+        </div>
+        <div class="file-list">
+          <div class="file-row">
+            <div class="file-icon" style="color: #4a8cc7;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">General_Research_CoverLetter.docx</div>
+              <div class="file-meta"><span>Added Apr 10, 2026</span><span>24 KB</span></div>
+            </div>
+            <div class="file-actions">
+              <button title="View"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <button title="Download"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+              <button class="btn-delete" title="Delete"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <div class="doc-section-header">
+          <h2>Letters of Recommendation</h2>
+          <span class="doc-count">1 File</span>
+        </div>
+        <div class="file-list">
+          <div class="file-row">
+            <div class="file-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">Chem_Dept_Recommendation_DrMiller.pdf</div>
+              <div class="file-meta"><span>Added Mar 15, 2026</span><span>120 KB</span></div>
+            </div>
+            <div class="file-actions">
+              <button title="View"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <button title="Download"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+              <button class="btn-delete" title="Delete"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <div class="doc-section-header">
+          <h2>Certificates & Training</h2>
+          <span class="doc-count">1 File</span>
+        </div>
+        <div class="file-list">
+          <div class="file-row">
+            <div class="file-icon" style="color: var(--success);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">Lab_Safety_CITI_Certificate.png</div>
+              <div class="file-meta"><span>Added Jan 10, 2026</span><span>2.4 MB</span></div>
+            </div>
+            <div class="file-actions">
+              <button title="View"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+              <button title="Download"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button>
+              <button class="btn-delete" title="Delete"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
