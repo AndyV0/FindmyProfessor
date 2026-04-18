@@ -430,7 +430,27 @@
     btn.style.background = "var(--success)";
     setTimeout(() => { btn.textContent = "Save Changes"; btn.style.background = "var(--ink)"; }, 2000);
   }
+// --- NEW CODE: Load data from localStorage on page load ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Fetch saved data (if it exists)
+    const savedFname = localStorage.getItem('fname');
+    const savedLname = localStorage.getItem('lname');
+    const savedUni = localStorage.getItem('uni');
+    const savedDept = localStorage.getItem('dept');
+    const savedOffice = localStorage.getItem('office');
 
+    // 2. Inject into your form fields
+    if (savedFname) document.getElementById('fname').value = savedFname;
+    if (savedLname) document.getElementById('lname').value = savedLname;
+    if (savedUni) document.getElementById('uniInput').value = savedUni;
+    if (savedDept) document.getElementById('dept').value = savedDept;
+    if (savedOffice) document.getElementById('office').value = savedOffice;
+
+    // 3. Update the UI and Preview panel with the new data
+    validateAll();
+    updatePreview();
+  });
+  // ----------------------------------------------------------
   // Initial Check
   validateAll();
 </script>
