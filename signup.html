@@ -103,151 +103,8 @@
   h2 em { font-style: italic; color: var(--terracotta); }
   .professor h2 em { color: var(--accent); }
 
-  .step-2 {
-    display: none;
-    padding: 50px 60px;
-    max-width: 540px;
-    margin: 0 auto;
-    width: 100%;
-    position: relative;
-  }
-
-  .form-header { margin-bottom: 32px; text-align: center; }
-
-  .field-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-  .field-row .field { margin-bottom: 0; flex: 1; }
-
-  .field { margin-bottom: 20px; position: relative; }
-  .field label {
-    display: block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    color: var(--ink-soft);
-  }
-
-  input, select {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    background: transparent;
-    font-family: inherit;
-    font-size: 14px;
-    transition: 0.2s;
-  }
-  input:focus, select:focus { outline: none; border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(201, 100, 66, 0.1); }
-
-  .error-notice {
-    font-size: 12px;
-    color: var(--error);
-    margin-top: 6px;
-    display: none;
-    font-weight: 500;
-  }
-  .error-notice.active { display: block; animation: shake 0.3s; }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
-  }
-
-  .dropdown-menu {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0; right: 0;
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 100;
-    display: none;
-  }
-  .dropdown-menu.active { display: block; }
-  .dropdown-item {
-    padding: 12px 16px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.15s;
-    border-bottom: 1px solid var(--rule);
-  }
-  .dropdown-item:last-child { border-bottom: none; }
-  .dropdown-item:hover { background: rgba(23, 20, 17, 0.05); }
-
-  .checklist {
-    margin-top: 12px;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .check-item {
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #8d8275;
-    transition: all 0.3s ease;
-  }
-
-  .check-item svg { transition: all 0.3s ease; }
-  .check-item.valid { color: var(--success); text-shadow: 0 0 8px rgba(122, 139, 109, 0.4); }
-  .check-item.valid svg { color: var(--success); filter: drop-shadow(0 0 4px var(--success)); }
-  .check-item.invalid { color: var(--error); text-shadow: 0 0 8px rgba(201, 66, 66, 0.4); }
-  .check-item.invalid svg { color: var(--error); filter: drop-shadow(0 0 4px var(--error)); }
-
-  .btn-submit {
-    width: 100%;
-    padding: 16px;
-    background: var(--ink);
-    color: var(--cream);
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 12px;
-    cursor: not-allowed;
-    opacity: 0.5;
-    transition: 0.3s;
-    border: none;
-  }
-
-  .btn-submit.ready {
-    cursor: pointer;
-    opacity: 1;
-    background: var(--terracotta);
-  }
-
-  .back-btn {
-    position: absolute;
-    top: 24px;
-    left: 24px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    text-transform: uppercase;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--ink-soft);
-  }
-
-  #professorFields { display: none; margin-top: 20px; border-top: 1px solid var(--rule); padding-top: 20px; }
-
   @media (max-width: 768px) {
     .step-1 { grid-template-columns: 1fr; }
-    .step-2 { padding: 40px 24px; }
-    .field-row { flex-direction: column; gap: 0; }
   }
 </style>
 </head>
@@ -259,112 +116,23 @@
   <div class="card" id="signupCard">
     
     <div class="step-1" id="step1">
-      <button class="role-option student" onclick="goToStep2('student')">
+      <button class="role-option student" onclick="window.goToStep2('student')">
         <div>
           <div class="role-eyebrow">Option 01</div>
           <h2>I am a <em>Student</em></h2>
           <p style="font-size: 14px; opacity: 0.7;">Discover and apply for research opportunities.</p>
         </div>
-        <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue →</div>
+        <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue with GitHub →</div>
       </button>
 
-      <button class="role-option professor" onclick="goToStep2('professor')">
+      <button class="role-option professor" onclick="window.goToStep2('professor')">
         <div>
           <div class="role-eyebrow">Option 02</div>
           <h2>I am a <em>Professor</em></h2>
           <p style="font-size: 14px; opacity: 0.7;">Post roles and manage student applicants.</p>
         </div>
-        <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue →</div>
+        <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue with GitHub →</div>
       </button>
-    </div>
-
-    <div class="step-2" id="step2">
-      <button class="back-btn" onclick="goBack()">← Back</button>
-      <div class="form-header">
-        <h2 id="formTitle">Create <em>Account</em></h2>
-        <p id="formSub" style="font-size: 14px; color: var(--ink-soft);"></p>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>First Name *</label>
-          <input type="text" id="fname" placeholder="Jane" oninput="validateForm()">
-        </div>
-        <div class="field">
-          <label>Last Name *</label>
-          <input type="text" id="lname" placeholder="Doe" oninput="validateForm()">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>University Name *</label>
-        <input type="text" id="uni" placeholder="Start typing your school..." autocomplete="off" oninput="handleUniInput()">
-        <div class="dropdown-menu" id="uniDropdown"></div>
-      </div>
-
-      <div class="field">
-        <label>University Email *</label>
-        <input type="email" id="email" placeholder="name@university.edu" oninput="validateForm()">
-        <div class="error-notice" id="emailError">⚠ Please enter a valid university email.</div>
-      </div>
-
-      <div id="professorFields">
-        <div class="field-row">
-          <div class="field">
-            <label>Department *</label>
-            <input type="text" id="dept" placeholder="e.g. Neurobiology" oninput="validateForm()">
-          </div>
-          <div class="field">
-            <label>Title *</label>
-            <select id="title" onchange="validateForm()">
-              <option value="">Select Title</option>
-              <option>Assistant Professor</option>
-              <option>Associate Professor</option>
-              <option>Full Professor</option>
-              <option>Department Chair</option>
-              <option>Lab Director</option>
-            </select>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Faculty ID *</label>
-            <input type="text" id="facultyId" placeholder="Verification ID" oninput="validateForm()">
-          </div>
-          <div class="field">
-            <label>Office Location *</label>
-            <input type="text" id="office" placeholder="Bldg/Room" oninput="validateForm()">
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Password *</label>
-        <input type="password" id="password" placeholder="••••••••" oninput="validateForm()">
-        
-        <ul class="checklist">
-          <li class="check-item" id="charLen">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
-            At least 8 characters
-          </li>
-          <li class="check-item" id="hasNum">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
-            Contains a number
-          </li>
-          <li class="check-item" id="hasSym">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
-            Contains a symbol (@, #, !, etc.)
-          </li>
-        </ul>
-      </div>
-
-      <div class="field">
-        <label>Confirm Password *</label>
-        <input type="password" id="confirmPassword" placeholder="••••••••" oninput="validateForm()">
-        <div class="error-notice" id="matchError">⚠ Passwords do not match.</div>
-      </div>
-
-      <button class="btn-submit" id="submitBtn" onclick="finish()">Finish Signup</button>
     </div>
 
   </div>
@@ -397,12 +165,6 @@
       alert("Error connecting to GitHub: " + error.message);
       window.location.reload();
     }
-  };
-
-  window.goBack = () => {
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step1').style.display = 'grid';
-    document.getElementById('signupCard').style.maxWidth = '900px';
   };
 </script>
 
