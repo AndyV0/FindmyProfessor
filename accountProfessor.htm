@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Faculty Account — FindMyStudent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Manrope:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #f4efe6;
+    --surface-dim: #e8e0d1;
+    --ink: #171411;
+    --ink-soft: #4a4339;
+    --cream: #f4efe6;
+    --cream-dim: rgba(244, 239, 230, 0.72);
+    --accent: #e8a733;
+    --terracotta: #c96442;
+    --success: #7a8b6d;
+    --error: #c94242;
+    --rule: rgba(23, 20, 17, 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    width: 120px;
+    background: var(--bg);
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    flex-shrink: 0;
+    z-index: 50;
+  }
+
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 600, 'SOFT' 20;
+    font-size: 14px;
+    line-height: 1.1;
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 0 12px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .brand em { display: block; font-style: italic; color: var(--accent); }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 8px;
+    color: var(--cream-dim);
+    transition: 0.2s;
+    cursor: pointer;
+    font-size: 11px;
+    gap: 6px;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { color: var(--cream); background: rgba(244, 239, 230, 0.05); }
+  .nav-item.active { color: var(--cream); border-left-color: var(--accent); background: rgba(244, 239, 230, 0.08); }
+  .nav-item svg { width: 22px; height: 22px; stroke-width: 1.5; }
+
+  .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--surface-dim);
+    background-image: url('https://api.dicebear.com/7.x/notionists/svg?seed=Thorne');
+    background-size: cover;
+    margin-bottom: 4px;
+    border: 2px solid transparent;
+  }
+
+  /* ============ MAIN LAYOUT ============ */
+  .layout-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .top-bar {
+    position: sticky;
+    top: 0;
+    background: rgba(244, 239, 230, 0.95);
+    backdrop-filter: blur(12px);
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--rule);
+    z-index: 10;
+  }
+  .top-bar h1 { font-family: 'Fraunces', serif; font-size: 32px; }
+
+  .btn-save {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: 0.2s;
+  }
+  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-save:not(:disabled):hover { background: var(--terracotta); transform: translateY(-1px); }
+
+  .main-content { padding: 40px 48px; width: 100%; }
+
+  /* Island Sections */
+  .section-island {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 32px;
+    border: 1px solid var(--rule);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  }
+
+  .section-header {
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 16px;
+  }
+  .section-header h2 { font-family: 'Fraunces', serif; font-size: 22px; }
+
+  /* Form Elements */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .field { position: relative; }
+  .field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: var(--ink-soft);
+  }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    transition: 0.2s;
+  }
+
+  /* Error States */
+  .field.required-error input, 
+  .field.required-error textarea { border-color: var(--error); background: #fff8f8; }
+  .error-msg {
+    color: var(--error);
+    font-size: 11px;
+    margin-top: 6px;
+    display: none;
+    font-weight: 600;
+  }
+  .field.required-error .error-msg { display: block; }
+
+  /* Dropdown Styling */
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: #ffffff;
+    border: 1px solid #caced1;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+  .dropdown-menu.active { display: block; }
+  .dropdown-item { padding: 10px 16px; font-size: 13px; cursor: pointer; }
+  .dropdown-item:hover { background: #f0f4f8; }
+
+  /* ============ PREVIEW PANEL ============ */
+  .preview-panel {
+    width: 380px;
+    flex-shrink: 0;
+    padding: 40px 32px;
+    border-left: 1px solid var(--rule);
+    background: #fff;
+    overflow-y: auto;
+  }
+  .preview-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .preview-card {
+    border: 1px solid var(--rule);
+    border-radius: 16px;
+    padding: 24px;
+    background: var(--surface);
+  }
+  .preview-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    background-image: url('https://api.dicebear.com/7.x/notionists/svg?seed=Thorne');
+    background-size: cover;
+    border: 3px solid #fff;
+  }
+  .preview-name { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 4px; }
+  .preview-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 4px;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .preview-bio { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <a href="index.html" class="brand">Find My<em>Student</em></a>
+    <a href="accountProfessor.html" class="nav-item active">
+      <div class="avatar"></div>
+      <span>Account</span>
+    </a>
+    <a href="professorPortal.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="messageProfessor.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span>Messages</span>
+    </a>
+    <a href="postingsProfessor.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+      <span>Postings</span>
+    </a>
+    <a href="vettingProfessor.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      <span>Vetting</span>
+    </a>
+  </aside>
+
+  <div class="layout-wrapper">
+    <div class="top-bar">
+      <h1>Account Settings</h1>
+      <button class="btn-save" id="saveBtn" onclick="saveStatus()">Save Changes</button>
+    </div>
+
+    <main class="main-content">
+      
+      <section class="section-island">
+        <div class="section-header">
+          <h2>Faculty Credentials</h2>
+        </div>
+        
+        <div class="field-grid">
+          <div class="field">
+            <label>First Name *</label>
+            <input type="text" id="fname" value="Elizabeth" oninput="validateAll()">
+            <div class="error-msg">Response Required</div>
+          </div>
+          <div class="field">
+            <label>Last Name *</label>
+            <input type="text" id="lname" value="Thorne" oninput="validateAll()">
+            <div class="error-msg">Response Required</div>
+          </div>
+          <div class="field">
+            <label>University *</label>
+            <input type="text" id="uniInput" value="University of California, Irvine (UCI)" autocomplete="off" oninput="handleUniDropdown()">
+            <div class="dropdown-menu" id="uniDropdown"></div>
+            <div class="error-msg">Response Required</div>
+          </div>
+          <div class="field">
+            <label>Department *</label>
+            <input type="text" id="dept" value="Neurobiology" oninput="validateAll()">
+            <div class="error-msg">Response Required</div>
+          </div>
+          <div class="field">
+            <label>Office Location *</label>
+            <input type="text" id="office" value="Biology Sciences III, Room 402" oninput="validateAll()">
+            <div class="error-msg">Response Required</div>
+          </div>
+          <div class="field">
+            <label>General Campus Location *</label>
+            <input type="text" id="loc" value="Irvine, CA" oninput="validateAll()">
+            <div class="error-msg">Response Required</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-island">
+        <div class="section-header">
+          <h2>Research Profile</h2>
+        </div>
+        <div class="field">
+          <label>Research Summary *</label>
+          <textarea id="bio" oninput="updatePreview(); validateAll()">Our lab investigates molecular mechanisms of long-term memory formation, specifically focusing on protein folding dynamics and synaptic strengthening.</textarea>
+          <div class="error-msg">Response Required</div>
+        </div>
+      </section>
+
+      <section class="section-island">
+        <div class="section-header">
+          <h2>Security</h2>
+        </div>
+        <div class="field" style="margin-bottom: 24px;">
+          <label>Current Password *</label>
+          <input type="password" id="currPass" placeholder="Enter current password to verify" oninput="validateAll()">
+          <div class="error-msg">Verification Required</div>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label>New Password</label>
+            <input type="password" id="newPass" placeholder="••••••••">
+          </div>
+          <div class="field">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPass" placeholder="••••••••">
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <aside class="preview-panel">
+    <div class="preview-header">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Student View Preview
+    </div>
+    <div class="preview-card">
+      <div class="preview-avatar"></div>
+      <div class="preview-name" id="previewName">Dr. Thorne</div>
+      <div class="preview-tag" id="previewDept">Neurobiology</div>
+      <div class="preview-bio" id="previewBio">Our lab investigates molecular mechanisms of long-term memory formation...</div>
+      <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--rule);">
+      <div style="font-size: 11px; font-weight: 700; color: var(--terracotta); text-transform: uppercase;">Active Postings</div>
+      <div style="font-size: 13px; margin-top: 8px;">• Protein Folding Dynamics Lab</div>
+    </div>
+  </aside>
+
+<script>
+  const UNIVERSITIES = ["Stanford University", "Harvard University", "University of California, Irvine (UCI)", "Florida National University", "Massachusetts Institute of Technology (MIT)", "California Institute of Technology (Caltech)", "University of California, Los Angeles (UCLA)", "University of Southern California (USC)", "Los Angeles City College (LACC)"];
+
+  function handleUniDropdown() {
+    const input = document.getElementById('uniInput');
+    const dropdown = document.getElementById('uniDropdown');
+    const query = input.value.toLowerCase();
+    dropdown.innerHTML = '';
+
+    if (query.length > 0) {
+      const matches = UNIVERSITIES.filter(u => u.toLowerCase().includes(query));
+      matches.forEach(match => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        item.textContent = match;
+        item.onclick = () => { input.value = match; dropdown.classList.remove('active'); validateAll(); };
+        dropdown.appendChild(item);
+      });
+      dropdown.classList.add('active');
+    } else {
+      dropdown.classList.remove('active');
+    }
+    validateAll();
+  }
+
+  function validateAll() {
+    const fields = ['fname', 'lname', 'uniInput', 'dept', 'office', 'loc', 'bio', 'currPass'];
+    let allValid = true;
+
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      const parent = el.closest('.field');
+      if (el.value.trim() === '') {
+        parent.classList.add('required-error');
+        allValid = false;
+      } else {
+        parent.classList.remove('required-error');
+      }
+    });
+
+    document.getElementById('saveBtn').disabled = !allValid;
+    updatePreview();
+  }
+
+  function updatePreview() {
+    document.getElementById('previewName').textContent = `Dr. ${document.getElementById('lname').value || 'Thorne'}`;
+    document.getElementById('previewDept').textContent = document.getElementById('dept').value || 'Department';
+    document.getElementById('previewBio').textContent = document.getElementById('bio').value || 'No summary provided...';
+  }
+
+  function saveStatus() {
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = "Saved ✓";
+    btn.style.background = "var(--success)";
+    setTimeout(() => { btn.textContent = "Save Changes"; btn.style.background = "var(--ink)"; }, 2000);
+  }
+
+  // Initial Check
+  validateAll();
+</script>
+</body>
+</html>

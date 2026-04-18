@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Faculty Portal — FindMyStudent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Manrope:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #f4efe6;
+    --surface-dim: #e8e0d1;
+    --ink: #171411;
+    --ink-soft: #4a4339;
+    --cream: #f4efe6;
+    --cream-dim: rgba(244, 239, 230, 0.72);
+    --accent: #e8a733;
+    --terracotta: #c96442;
+    --rule: rgba(23, 20, 17, 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    width: 120px;
+    background: var(--bg);
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    flex-shrink: 0;
+    z-index: 50;
+  }
+
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 600, 'SOFT' 20;
+    font-size: 14px;
+    line-height: 1.1;
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 0 12px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .brand em { display: block; font-style: italic; color: var(--accent); }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 8px;
+    color: var(--cream-dim);
+    transition: 0.2s;
+    cursor: pointer;
+    font-size: 11px;
+    gap: 6px;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+    text-align: center;
+  }
+  .nav-item:hover { color: var(--cream); background: rgba(244, 239, 230, 0.05); }
+  .nav-item.active { color: var(--cream); border-left-color: var(--accent); background: rgba(244, 239, 230, 0.08); }
+  
+  .nav-item svg { width: 22px; height: 22px; stroke-width: 1.5; }
+
+  .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--surface-dim);
+    background-image: url('https://api.dicebear.com/7.x/notionists/svg?seed=Thorne');
+    background-size: cover;
+    margin-bottom: 4px;
+    border: 2px solid transparent;
+  }
+  .nav-item.active .avatar { border-color: var(--accent); }
+
+  /* ============ MAIN LAYOUT ============ */
+  .layout-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .header {
+    padding: 32px 48px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .header h1 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 400, 'SOFT' 30;
+    font-size: 32px;
+  }
+
+  .btn-new-post {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-new-post:hover { background: var(--terracotta); }
+
+  .main-content { padding: 40px 48px; width: 100%; }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .stat-card {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--rule);
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    color: var(--ink);
+  }
+
+  /* Table Style for Applicants */
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    margin-bottom: 24px;
+  }
+
+  .applicant-list {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+  }
+  .applicant-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+    transition: background 0.2s;
+  }
+  .applicant-row:last-child { border-bottom: none; }
+  .applicant-row:hover { background: #fdfaf5; }
+
+  .student-info { display: flex; align-items: center; gap: 12px; }
+  .student-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-dim); }
+  .student-name { font-weight: 700; font-size: 14px; }
+  .student-meta { font-size: 12px; color: var(--ink-soft); }
+
+  .status-pill {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+  }
+  .status-new { background: #e3f2fd; color: #1976d2; }
+  .status-review { background: #fff3e0; color: #ef6c00; }
+
+  .btn-action {
+    color: var(--terracotta);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: right;
+  }
+
+  /* ============ RIGHT PANELS ============ */
+  .right-panels {
+    width: 320px;
+    flex-shrink: 0;
+    padding: 40px 32px;
+    border-left: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .right-panel-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+    margin-bottom: 24px;
+  }
+
+  /* Island Styling */
+  .island-item {
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--rule);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+
+  /* Meeting Dates */
+  .meeting-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .meeting-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid #caced1;
+    display: grid;
+    place-items: center;
+    color: #a39c93;
+    font-size: 18px;
+  }
+  .meeting-content h4 { font-size: 14px; font-weight: 600; }
+  .meeting-content p { font-size: 12px; color: var(--ink-soft); }
+
+  /* Active Listings */
+  .listing-item h4 { font-size: 14px; font-weight: 600; }
+  .listing-item p { font-size: 12px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+ <aside class="sidebar">
+    <a href="index.html" class="brand">Find My<em>Student</em></a>
+    <a href="accountProfessor.html" class="nav-item">
+      <div class="avatar"></div>
+      <span>Account</span>
+    </a>
+    <a href="professorPortal.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="messageProfessor.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span>Messages</span>
+    </a>
+    <a href="postingsProfessor.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+      <span>Postings</span>
+    </a>
+    <a href="vettingProfessor.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      <span>Vetting</span>
+    </a>
+  </aside>
+
+  <div class="layout-wrapper">
+    <header class="header">
+      <div>
+        <p style="font-family: 'JetBrains Mono'; font-size: 11px; color: var(--ink-soft); text-transform: uppercase;">Welcome, Dr. Thorne</p>
+        <h1>Faculty Dashboard</h1>
+      </div>
+      <button class="btn-new-post">+ Create New Posting</button>
+    </header>
+
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Active Postings</div>
+          <div class="stat-value">3</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Applicants</div>
+          <div class="stat-value">42</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Interviews Set</div>
+          <div class="stat-value">8</div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Recent Applicants</h2>
+      <div class="applicant-list">
+        <div class="applicant-row">
+          <div class="student-info">
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" class="student-avatar" alt="">
+            <div>
+              <div class="student-name">Alex Chen</div>
+              <div class="student-meta">Neurobiology • 3.9 GPA</div>
+            </div>
+          </div>
+          <div class="student-meta">Protein Lab</div>
+          <div><span class="status-pill status-new">New Match</span></div>
+          <div class="btn-action">Review Profile →</div>
+        </div>
+
+        <div class="applicant-row">
+          <div class="student-info">
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Sarah" class="student-avatar" alt="">
+            <div>
+              <div class="student-name">Sarah Jenkins</div>
+              <div class="student-meta">Biology • 3.7 GPA</div>
+            </div>
+          </div>
+          <div class="student-meta">TA — Cell Bio</div>
+          <div><span class="status-pill status-review">In Review</span></div>
+          <div class="btn-action">Review Profile →</div>
+        </div>
+
+        <div class="applicant-row">
+          <div class="student-info">
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Marcus" class="student-avatar" alt="">
+            <div>
+              <div class="student-name">Marcus Wong</div>
+              <div class="student-meta">Bio-Chem • 4.0 GPA</div>
+            </div>
+          </div>
+          <div class="student-meta">Protein Lab</div>
+          <div><span class="status-pill status-review">In Review</span></div>
+          <div class="btn-action">Review Profile →</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <aside class="right-panels">
+    <div>
+      <div class="right-panel-header">Meeting Dates</div>
+      <div class="island-item meeting-item">
+        <div class="meeting-icon">📅</div>
+        <div class="meeting-content">
+          <h4>Aug 15 · 10:00 AM</h4>
+          <p>Alex Chen, protein lab<br/>Zoom</p>
+        </div>
+      </div>
+      <div class="island-item meeting-item">
+        <div class="meeting-icon">📅</div>
+        <div class="meeting-content">
+          <h4>Aug 16 · 11:30 AM</h4>
+          <p>Sarah Jenkins, Cell bio TA<br/>LSB 302</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="right-panel-header">Active Listings</div>
+      <div class="island-item listing-item">
+        <h4>Protein Folding Dynamics</h4>
+        <p>Molecular biology research<br/>12 Applicants</p>
+      </div>
+      <div class="island-item listing-item">
+        <h4>Teaching Assistant</h4>
+        <p>Cell Bio, undergrad lab<br/>8 Applicants</p>
+      </div>
+      <div class="island-item listing-item">
+        <h4>Statistical modeling</h4>
+        <p>Turnout analysis<br/>22 Applicants</p>
+      </div>
+    </div>
+  </aside>
+
+</body>
+</html>
