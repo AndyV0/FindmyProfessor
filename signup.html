@@ -384,7 +384,11 @@
   </div>
 </div>
 
-<script>
+<<script type="module">
+  // 1. Import your central database client
+  import { supabase } from './supabase.js';
+
+  // 2. State variables
   let selectedRole = '';
   const UNIVERSITIES = [
     "Stanford University", "Massachusetts Institute of Technology (MIT)", 
@@ -392,10 +396,11 @@
     "University of California, Los Angeles (UCLA)", "University of Southern California (USC)", 
     "San Diego Mesa College", "Los Angeles City College (LACC)", 
     "Santa Monica College", "University of Oxford", "University of Tokyo", "New York University (NYU)",
-    "University of California, Irvine (UCI)"
+    "University of California, Irvine (UCI)", "University of California, Riverside (UCR)"
   ];
 
-  function goToStep2(role) {
+  // 3. UI Functions (Attached to window so HTML can trigger them)
+  window.goToStep2 = function(role) {
     selectedRole = role;
     document.getElementById('step1').style.display = 'none';
     const s2 = document.getElementById('step2');
@@ -416,23 +421,23 @@
     
     document.getElementById('signupCard').style.maxWidth = '540px';
     document.getElementById('signupCard').style.margin = '0 auto';
-    validateForm();
-  }
+    window.validateForm();
+  };
 
-  function goBack() {
+  window.goBack = function() {
     document.getElementById('step2').style.display = 'none';
     document.getElementById('step1').style.display = 'grid';
     document.getElementById('signupCard').style.maxWidth = '900px';
-  }
+  };
 
-  function handleUniInput() {
+  window.handleUniInput = function() {
     const input = document.getElementById('uni').value.toLowerCase();
     const dropdown = document.getElementById('uniDropdown');
     dropdown.innerHTML = '';
 
     if (!input) {
       dropdown.classList.remove('active');
-      validateForm();
+      window.validateForm();
       return;
     }
 
@@ -446,7 +451,7 @@
         div.onclick = () => {
           document.getElementById('uni').value = match;
           dropdown.classList.remove('active');
-          validateForm();
+          window.validateForm();
         };
         dropdown.appendChild(div);
       });
@@ -454,10 +459,10 @@
     } else {
       dropdown.classList.remove('active');
     }
-    validateForm();
-  }
+    window.validateForm();
+  };
 
-  // Safe Click Listener
+  // Safe Click Listener for Dropdown
   document.addEventListener('click', (e) => {
     const uniDropdown = document.getElementById('uniDropdown');
     if (uniDropdown && !e.target.closest('#uni') && !e.target.closest('#uniDropdown')) {
@@ -465,7 +470,7 @@
     }
   });
 
-  function validateForm() {
+  window.validateForm = function() {
     const fname = document.getElementById('fname').value.trim();
     const lname = document.getElementById('lname').value.trim();
     const uni = document.getElementById('uni').value.trim();
@@ -489,9 +494,9 @@
     const numValid = /\d/.test(pass);
     const symValid = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
 
-    updateCheck('charLen', lenValid, pass.length > 0);
-    updateCheck('hasNum', numValid, pass.length > 0);
-    updateCheck('hasSym', symValid, pass.length > 0);
+    window.updateCheck('charLen', lenValid, pass.length > 0);
+    window.updateCheck('hasNum', numValid, pass.length > 0);
+    window.updateCheck('hasSym', symValid, pass.length > 0);
 
     const passwordsMatch = pass === confirmPass && pass.length > 0;
     const matchError = document.getElementById('matchError');
@@ -526,9 +531,9 @@
       btn.classList.remove('ready');
       btn.disabled = true;
     }
-  }
+  };
 
-  function updateCheck(id, isValid, isTyping) {
+  window.updateCheck = function(id, isValid, isTyping) {
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('valid', 'invalid');
@@ -538,31 +543,60 @@
     } else if (isTyping) {
       el.classList.add('invalid');
     }
-  }
+  };
 
-  function finish() {
-    if (document.getElementById('submitBtn').classList.contains('ready')) {
+  // 4. The Database Integration
+  window.finish = async function() {
+    const btn = document.getElementById('submitBtn');
+    if (!btn.classList.contains('ready')) return;
+
+    const firstName = document.getElementById('fname').value.trim();
+    const lastName = document.getElementById('lname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const university = document.getElementById('uni').value.trim();
+    const major = selectedRole === 'student' ? document.getElementById('major').value.trim() : null;
+
+    const originalText = btn.textContent;
+    btn.textContent = "Saving...";
+    btn.disabled = true;
+
+    try {
+      // Push to Supabase
+      const { error } = await supabase
+        .from('student_signups')
+        .insert([
+          {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            university: university,
+            major: major
+          }
+        ]);
+
+      if (error) throw error;
+
+      // Update localStorage for seamless UI handoff
+      localStorage.setItem('fms_fname', firstName);
+      localStorage.setItem('fms_lname', lastName);
+      localStorage.setItem('fms_uni', university);
       
-      // Save global fields to LocalStorage
-      localStorage.setItem('fms_fname', document.getElementById('fname').value.trim());
-      localStorage.setItem('fms_lname', document.getElementById('lname').value.trim());
-      localStorage.setItem('fms_uni', document.getElementById('uni').value.trim());
-
       if (selectedRole === 'student') {
-        // Save Student-specific fields
         localStorage.setItem('fms_major', document.getElementById('major').value.trim());
-        
         window.location.href = 'studentPortal.html';
-      } else if (selectedRole === 'professor') {
-        // Save Professor-specific fields
+      } else {
         localStorage.setItem('fms_dept', document.getElementById('dept').value.trim());
         localStorage.setItem('fms_office', document.getElementById('office').value.trim());
-
-        alert("Professor account created! Redirecting to faculty dashboard...");
         window.location.href = 'professorPortal.html'; 
       }
+
+    } catch (error) {
+      console.error("Database error:", error.message);
+      alert("Something went wrong saving your data. Please try again.");
+      btn.textContent = originalText;
+      btn.disabled = false;
     }
-  }
+  };
 </script>
 
 </body>
