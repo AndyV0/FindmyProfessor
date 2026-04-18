@@ -492,7 +492,30 @@
   </div>
 
   <script>
-    const UNIVERSITIES = ["Stanford University", "Harvard University", "University of California, Irvine (UCI)", "Florida National University", "Massachusetts Institute of Technology (MIT)", "California Institute of Technology (Caltech)", "University of California, Los Angeles (UCLA)", "University of Southern California (USC)", "Los Angeles City College (LACC)"];
+    // Ensure university names match EXACTLY with index.html names for perfect linking
+    const UNIVERSITIES = [
+      "Stanford University", 
+      "Massachusetts Institute of Technology (MIT)", 
+      "Harvard University", 
+      "University of California, Berkeley (UCB)",
+      "University of California, Los Angeles (UCLA)",
+      "University of California, Irvine (UCI)",
+      "University of Southern California (USC)", 
+      "San Diego Mesa College", 
+      "Los Angeles City College (LACC)",
+      "Santa Monica College",
+      "UC San Diego",
+      "CSU Northridge",
+      "California Institute of Technology"
+    ];
+
+    // Auto-fill institution from local storage if available
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedUni = localStorage.getItem('fms_uni');
+      if(savedUni) {
+        document.getElementById('newUni').value = savedUni;
+      }
+    });
 
     // Modal Visibility
     function openModal() {
@@ -502,9 +525,8 @@
 
     function closeModal() {
       document.getElementById('creationModal').classList.remove('active');
-      // Reset fields on close
+      // Reset fields on close (leaving Institution filled out if it was pre-filled)
       document.getElementById('newTitle').value = '';
-      document.getElementById('newUni').value = '';
       document.getElementById('newDept').value = '';
       document.getElementById('newHours').value = '';
       document.getElementById('newDesc').value = '';
@@ -577,7 +599,8 @@
           const container = document.getElementById('tagsContainer');
           const pill = document.createElement('div');
           pill.className = 'tag-pill';
-          pill.innerHTML = `${val} <button onclick="this.parentElement.remove()">✕</button>`;
+          // Ensure we don't accidentally capture the X button text later
+          pill.innerHTML = `<span>${val}</span> <button onclick="this.parentElement.remove()">✕</button>`;
           container.insertBefore(pill, this);
           this.value = '';
         }
@@ -589,10 +612,34 @@
       if (document.getElementById('btnSavePost').disabled) return;
 
       const title = document.getElementById('newTitle').value.trim();
+      const uni = document.getElementById('newUni').value.trim();
       const dept = document.getElementById('newDept').value.trim();
       const hours = document.getElementById('newHours').value.trim();
       
-      // Create new HTML Node
+      // Extract tags safely
+      const tagElements = document.querySelectorAll('#tagsContainer .tag-pill span');
+      const tags = Array.from(tagElements).map(el => el.textContent.trim());
+
+      // Get Professor name from local storage or set default
+      const profLname = localStorage.getItem('fms_lname');
+      const profName = profLname ? `Dr. ${profLname}` : 'Dr. Professor';
+
+      // 1. Save to LocalStorage for index.html to read
+      const customPostings = JSON.parse(localStorage.getItem('fms_custom_postings') || '[]');
+      const newPost = {
+        type: 'research', // Defaulting to research style
+        title: title,
+        prof: profName,
+        dept: dept,
+        tags: tags.length > 0 ? tags : [hours],
+        posted: 'Just now',
+        uniName: uni // Crucial for matching in index.html
+      };
+      
+      customPostings.push(newPost);
+      localStorage.setItem('fms_custom_postings', JSON.stringify(customPostings));
+
+      // 2. Inject into the Professor's DOM immediately
       const newCardHTML = `
         <div class="posting-island">
           <div class="post-info">
