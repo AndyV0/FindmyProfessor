@@ -370,154 +370,40 @@
   </div>
 </div>
 
-<script>
-  let selectedRole = '';
-  const UNIVERSITIES = [
-    "Stanford University", "Massachusetts Institute of Technology (MIT)", 
-    "Harvard University", "University of California, Berkeley (UCB)", 
-    "University of California, Los Angeles (UCLA)", "University of Southern California (USC)", 
-    "San Diego Mesa College", "Los Angeles City College (LACCD)", 
-    "Santa Monica College", "University of Oxford", "University of Tokyo", "New York University (NYU)"
-  ];
+<script type="module">
+  import { supabase } from './supabase.js';
 
-  function goToStep2(role) {
-    selectedRole = role;
-    document.getElementById('step1').style.display = 'none';
-    const s2 = document.getElementById('step2');
-    s2.style.display = 'block';
-    
-    const profFields = document.getElementById('professorFields');
-    
-    if (role === 'student') {
-      document.getElementById('formSub').textContent = 'Joining as a student to discover research.';
-      profFields.style.display = 'none';
-    } else {
-      document.getElementById('formSub').textContent = 'Joining as faculty to post and manage positions.';
-      profFields.style.display = 'block';
+  // Attach functions to window so the HTML onclick attributes can see them
+  window.goToStep2 = async (role) => {
+    // 1. Save the chosen role locally before leaving the site
+    localStorage.setItem('fmp_pending_role', role);
+
+    // 2. Change the button visually so the user knows it's loading
+    const card = document.getElementById('signupCard');
+    card.innerHTML = `<div style="padding: 60px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <h2>Redirecting to <em>GitHub</em>...</h2>
+                      </div>`;
+
+    // 3. Trigger Supabase OAuth
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        // Send them to the student portal to process the database entry
+        redirectTo: window.location.origin + '/studentPortal.html'
+      }
+    });
+
+    if (error) {
+      alert("Error connecting to GitHub: " + error.message);
+      window.location.reload();
     }
-    
-    document.getElementById('signupCard').style.maxWidth = '540px';
-    document.getElementById('signupCard').style.margin = '0 auto';
-    validateForm();
-  }
+  };
 
-  function goBack() {
+  window.goBack = () => {
     document.getElementById('step2').style.display = 'none';
     document.getElementById('step1').style.display = 'grid';
     document.getElementById('signupCard').style.maxWidth = '900px';
-  }
-
-  function handleUniInput() {
-    const input = document.getElementById('uni').value.toLowerCase();
-    const dropdown = document.getElementById('uniDropdown');
-    dropdown.innerHTML = '';
-
-    if (!input) {
-      dropdown.classList.remove('active');
-      validateForm();
-      return;
-    }
-
-    const matches = UNIVERSITIES.filter(u => u.toLowerCase().includes(input));
-    
-    if (matches.length > 0) {
-      matches.forEach(match => {
-        const div = document.createElement('div');
-        div.className = 'dropdown-item';
-        div.textContent = match;
-        div.onclick = () => {
-          document.getElementById('uni').value = match;
-          dropdown.classList.remove('active');
-          validateForm();
-        };
-        dropdown.appendChild(div);
-      });
-      dropdown.classList.add('active');
-    } else {
-      dropdown.classList.remove('active');
-    }
-    validateForm();
-  }
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#uni') && !e.target.closest('#uniDropdown')) {
-      document.getElementById('uniDropdown').classList.remove('active');
-    }
-  });
-
-  function validateForm() {
-    const fname = document.getElementById('fname').value.trim();
-    const lname = document.getElementById('lname').value.trim();
-    const uni = document.getElementById('uni').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const pass = document.getElementById('password').value;
-    const confirmPass = document.getElementById('confirmPassword').value;
-    const btn = document.getElementById('submitBtn');
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const emailValid = emailRegex.test(email);
-    const emailError = document.getElementById('emailError');
-    if (email.length > 0 && !emailValid) {
-      emailError.classList.add('active');
-    } else {
-      emailError.classList.remove('active');
-    }
-
-    // Password requirements
-    const lenValid = pass.length >= 8;
-    const numValid = /\d/.test(pass);
-    const symValid = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
-
-    updateCheck('charLen', lenValid, pass.length > 0);
-    updateCheck('hasNum', numValid, pass.length > 0);
-    updateCheck('hasSym', symValid, pass.length > 0);
-
-    const passwordsMatch = pass === confirmPass && pass.length > 0;
-    const matchError = document.getElementById('matchError');
-    if (confirmPass.length > 0 && !passwordsMatch) {
-      matchError.classList.add('active');
-    } else {
-      matchError.classList.remove('active');
-    }
-
-    // Professor specific validation
-    let profValid = true;
-    if (selectedRole === 'professor') {
-      const dept = document.getElementById('dept').value.trim();
-      const title = document.getElementById('title').value;
-      const fid = document.getElementById('facultyId').value.trim();
-      const office = document.getElementById('office').value.trim();
-      profValid = (dept && title && fid && office);
-    }
-
-    if (fname && lname && uni && emailValid && lenValid && numValid && symValid && passwordsMatch && profValid) {
-      btn.classList.add('ready');
-      btn.disabled = false;
-    } else {
-      btn.classList.remove('ready');
-      btn.disabled = true;
-    }
-  }
-
-  function updateCheck(id, isValid, isTyping) {
-    const el = document.getElementById(id);
-    el.classList.remove('valid', 'invalid');
-    if (isValid) el.classList.add('valid');
-    else if (isTyping) el.classList.add('invalid');
-  }
-
-  function finish() {
-    if (document.getElementById('submitBtn').classList.contains('ready')) {
-      if (selectedRole === 'student') {
-        window.location.href = 'studentPortal.html';
-      } else if (selectedRole === 'professor') {
-        // lead to professor portal or a success message
-        alert("Professor account created! Redirecting to faculty dashboard...");
-        window.location.href = 'professorPortal.html'; // Adjust as needed
-      }
-    }
-  }
+  };
 </script>
 
 </body>
