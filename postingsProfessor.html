@@ -174,6 +174,84 @@
   }
   .draft-placeholder:hover { background: #fff; border-color: var(--accent); color: var(--ink); }
 
+  /* ============ MODAL ============ */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 9, 8, 0.7);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 24px;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .modal-backdrop.active { display: flex; opacity: 1; }
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 540px;
+    padding: 40px;
+    position: relative;
+    transform: scale(0.96);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .modal-backdrop.active .modal { transform: scale(1); }
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    font-size: 24px;
+    color: var(--ink-soft);
+    line-height: 1;
+    transition: 0.2s;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal h2 { font-family: 'Fraunces', serif; font-size: 32px; margin-bottom: 24px; }
+  
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--ink-soft);
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    transition: 0.2s;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--terracotta);
+  }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 14px;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 13px;
+    margin-top: 12px;
+    transition: 0.2s;
+  }
+  .btn-submit:hover { background: var(--terracotta); }
+
 </style>
 </head>
 <body>
@@ -205,7 +283,7 @@
   <div class="layout-wrapper">
     <div class="top-bar">
       <h1>Active Postings</h1>
-      <button class="btn-create">+ Create Position</button>
+      <button class="btn-create" onclick="openModal()">+ Create Position</button>
     </div>
 
     <main class="main-content">
@@ -269,12 +347,142 @@
         </div>
       </div>
 
-      <div class="draft-placeholder">
+      <div class="draft-placeholder" onclick="openModal()">
         <p>+ Click to start a new position template</p>
       </div>
 
     </main>
   </div>
+
+  <div class="modal-backdrop" id="createModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2>Post a Position</h2>
+      
+      <div class="field">
+        <label>University / College</label>
+        <input type="text" id="posUni" placeholder="e.g. Los Angeles City College">
+      </div>
+      
+      <div class="field">
+        <label>Position Type</label>
+        <select id="posType">
+          <option value="research">Research</option>
+          <option value="internship">Internship</option>
+          <option value="ta">Teaching Assistant</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Title</label>
+        <input type="text" id="posTitle" placeholder="e.g. NMR analysis of halogenated aromatic compounds">
+      </div>
+
+      <div class="field">
+        <label>Department / Lab Code</label>
+        <input type="text" id="posDept" placeholder="e.g. Chemistry 212">
+      </div>
+
+      <div class="field">
+        <label>Tags (Comma Separated)</label>
+        <input type="text" id="posTags" placeholder="e.g. Organic Chem, Lab, 6hr/wk">
+      </div>
+
+      <button class="btn-submit" onclick="submitPosition()">Publish Position</button>
+    </div>
+  </div>
+
+<script>
+  // Setup Modal defaults based on User's local storage
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedUni = localStorage.getItem('fms_uni');
+    if (savedUni) {
+      document.getElementById('posUni').value = savedUni;
+    }
+  });
+
+  function openModal() {
+    document.getElementById('createModal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('createModal').classList.remove('active');
+  }
+
+  // Close modal when clicking on the dark backdrop
+  document.getElementById('createModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('createModal')) {
+      closeModal();
+    }
+  });
+
+  function submitPosition() {
+    // 1. Gather form values
+    const type = document.getElementById('posType').value;
+    const title = document.getElementById('posTitle').value;
+    const dept = document.getElementById('posDept').value;
+    const tagsInput = document.getElementById('posTags').value;
+    const uni = document.getElementById('posUni').value;
+
+    // Convert comma string into array
+    const tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag);
+
+    // 2. Fetch Professor name from local storage & format it
+    const fname = localStorage.getItem('fms_fname') || 'Firstname';
+    const lname = localStorage.getItem('fms_lname') || 'Lastname';
+    // Format to "Dr. F. Lastname"
+    const firstInitial = fname.charAt(0).toUpperCase();
+    const profFormattedName = `Dr. ${firstInitial}. ${lname}`;
+
+    // 3. Construct Data Object matching index.html format
+    const newPositionObj = {
+      type: type,
+      title: title,
+      prof: profFormattedName,
+      dept: dept,
+      tags: tagsArray,
+      posted: 'Now',
+      uni: uni
+    };
+
+    // Log the properly formatted object for the mock database
+    console.log("New Mock Data Object Created:", newPositionObj);
+
+    // 4. Visually add it to the Professor Dashboard
+    const mainContent = document.querySelector('.main-content');
+    const draftPlaceholder = document.querySelector('.draft-placeholder');
+
+    const newIsland = document.createElement('div');
+    newIsland.className = 'posting-island';
+    newIsland.innerHTML = `
+      <div class="post-info">
+        <div class="status-badge status-active">Active</div>
+        <h3>${title || 'Untitled Position'}</h3>
+        <p>${dept || 'General Dept.'} • ${tagsArray.join(' / ') || 'No tags'}</p>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-label">Applicants</div>
+        <div class="stat-mini-value">0</div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-label">Qualified Matches</div>
+        <div class="stat-mini-value" style="color: var(--success);">0</div>
+      </div>
+      <div class="actions">
+        <button class="btn-manage">Manage Roll →</button>
+        <button class="btn-manage" style="color: var(--ink-soft);">Edit Details</button>
+      </div>
+    `;
+
+    mainContent.insertBefore(newIsland, draftPlaceholder);
+
+    // Reset fields & close
+    document.getElementById('posTitle').value = '';
+    document.getElementById('posDept').value = '';
+    document.getElementById('posTags').value = '';
+    closeModal();
+  }
+</script>
 
 </body>
 </html>
