@@ -1127,9 +1127,9 @@ function renderPositions(list, filter) {
   }
 
   const typeLabel = { research: 'Research', internship: 'Internship', ta: 'Teaching Asst.' };
-
+  
   grid.innerHTML = filtered.map(p => `
-    <div class="position">
+    <div class="position" onclick="openSignup()">
       <span class="position-type ${p.type}">${typeLabel[p.type]}</span>
       <h3>${p.title}</h3>
       <p class="position-prof"><strong>${p.prof}</strong> · ${p.dept}</p>
@@ -1143,7 +1143,7 @@ function renderPositions(list, filter) {
     </div>
   `).join('');
 }
-
+  
 // ========== MODALS ==========
 const loginModal = document.getElementById('loginModal');
 
