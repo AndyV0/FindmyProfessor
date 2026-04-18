@@ -377,7 +377,8 @@
     "Harvard University", "University of California, Berkeley (UCB)", 
     "University of California, Los Angeles (UCLA)", "University of Southern California (USC)", 
     "San Diego Mesa College", "Los Angeles City College (LACCD)", 
-    "Santa Monica College", "University of Oxford", "University of Tokyo", "New York University (NYU)"
+    "Santa Monica College", "University of Oxford", "University of Tokyo", "New York University (NYU)",
+    "University of California, Irvine (UCI)"
   ];
 
   function goToStep2(role) {
@@ -477,8 +478,12 @@
     const matchError = document.getElementById('matchError');
     if (confirmPass.length > 0 && !passwordsMatch) {
       matchError.classList.add('active');
+      document.getElementById('confirmPassword').style.borderColor = "var(--error)";
+      document.getElementById('confirmPassword').style.boxShadow = "0 0 0 4px rgba(201, 66, 66, 0.1)";
     } else {
       matchError.classList.remove('active');
+      document.getElementById('confirmPassword').style.borderColor = passwordsMatch ? "var(--success)" : "var(--rule)";
+      document.getElementById('confirmPassword').style.boxShadow = "none";
     }
 
     // Professor specific validation
@@ -491,6 +496,7 @@
       profValid = (dept && title && fid && office);
     }
 
+    // Final form check
     if (fname && lname && uni && emailValid && lenValid && numValid && symValid && passwordsMatch && profValid) {
       btn.classList.add('ready');
       btn.disabled = false;
@@ -503,35 +509,36 @@
   function updateCheck(id, isValid, isTyping) {
     const el = document.getElementById(id);
     el.classList.remove('valid', 'invalid');
-    if (isValid) el.classList.add('valid');
-    else if (isTyping) el.classList.add('invalid');
-  }
-
-function finish() {
-  if (document.getElementById('submitBtn').classList.contains('ready')) {
     
-    // Save common fields to localStorage
-    localStorage.setItem('role', selectedRole);
-    localStorage.setItem('fname', document.getElementById('fname').value.trim());
-    localStorage.setItem('lname', document.getElementById('lname').value.trim());
-    localStorage.setItem('uni', document.getElementById('uni').value.trim());
-    localStorage.setItem('email', document.getElementById('email').value.trim());
-
-    if (selectedRole === 'student') {
-      window.location.href = 'studentPortal.html';
-    } else if (selectedRole === 'professor') {
-      
-      // Save professor-specific fields to localStorage
-      localStorage.setItem('dept', document.getElementById('dept').value.trim());
-      localStorage.setItem('title', document.getElementById('title').value);
-      localStorage.setItem('facultyId', document.getElementById('facultyId').value.trim());
-      localStorage.setItem('office', document.getElementById('office').value.trim());
-
-      // Redirect to the professor account page
-      window.location.href = 'accountProfessor.html'; 
+    if (isValid) {
+      el.classList.add('valid'); // Glows Green
+    } else if (isTyping) {
+      el.classList.add('invalid'); // Glows Red
     }
   }
-}
+
+  function finish() {
+    if (document.getElementById('submitBtn').classList.contains('ready')) {
+      
+      // Save global fields to LocalStorage
+      localStorage.setItem('fms_fname', document.getElementById('fname').value.trim());
+      localStorage.setItem('fms_lname', document.getElementById('lname').value.trim());
+      localStorage.setItem('fms_uni', document.getElementById('uni').value.trim());
+
+      if (selectedRole === 'student') {
+        window.location.href = 'studentPortal.html';
+      } else if (selectedRole === 'professor') {
+        
+        // Save Professor-specific fields to LocalStorage
+        localStorage.setItem('fms_dept', document.getElementById('dept').value.trim());
+        localStorage.setItem('fms_office', document.getElementById('office').value.trim());
+
+        alert("Professor account created! Redirecting to faculty dashboard...");
+        window.location.href = 'professorPortal.html'; 
+      }
+    }
+  }
+</script>
 
 </body>
 </html>
