@@ -46,6 +46,8 @@
     width: 100%;
     max-width: 900px;
     padding: 24px;
+    position: relative;
+    z-index: 10;
   }
 
   .card {
@@ -58,6 +60,7 @@
     flex-direction: column;
     min-height: 540px;
     transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
   }
 
   .step-1 {
@@ -66,6 +69,8 @@
     flex: 1;
     border-radius: 12px;
     overflow: hidden;
+    position: relative;
+    z-index: 5;
   }
 
   .role-option {
@@ -77,6 +82,8 @@
     transition: 0.3s;
     border: none;
     text-align: left;
+    position: relative;
+    z-index: 10;
   }
 
   .role-option.student { background: var(--surface); border-right: 1px solid var(--rule); }
@@ -242,7 +249,7 @@
     color: var(--ink-soft);
   }
 
-  #professorFields { display: none; margin-top: 20px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  #professorFields, #studentFields { display: none; margin-top: 20px; border-top: 1px solid var(--rule); padding-top: 20px; }
 
   @media (max-width: 768px) {
     .step-1 { grid-template-columns: 1fr; }
@@ -259,7 +266,7 @@
   <div class="card" id="signupCard">
     
     <div class="step-1" id="step1">
-      <button class="role-option student" onclick="goToStep2('student')">
+      <button type="button" class="role-option student" onclick="goToStep2('student')">
         <div>
           <div class="role-eyebrow">Option 01</div>
           <h2>I am a <em>Student</em></h2>
@@ -268,7 +275,7 @@
         <div style="font-family: 'JetBrains Mono'; font-size: 11px;">Continue →</div>
       </button>
 
-      <button class="role-option professor" onclick="goToStep2('professor')">
+      <button type="button" class="role-option professor" onclick="goToStep2('professor')">
         <div>
           <div class="role-eyebrow">Option 02</div>
           <h2>I am a <em>Professor</em></h2>
@@ -279,7 +286,7 @@
     </div>
 
     <div class="step-2" id="step2">
-      <button class="back-btn" onclick="goBack()">← Back</button>
+      <button type="button" class="back-btn" onclick="goBack()">← Back</button>
       <div class="form-header">
         <h2 id="formTitle">Create <em>Account</em></h2>
         <p id="formSub" style="font-size: 14px; color: var(--ink-soft);"></p>
@@ -308,11 +315,18 @@
         <div class="error-notice" id="emailError">⚠ Please enter a valid university email.</div>
       </div>
 
+      <div id="studentFields">
+        <div class="field">
+          <label>Major / Degree *</label>
+          <input type="text" id="major" placeholder="e.g. Neurobiology" oninput="validateForm()">
+        </div>
+      </div>
+
       <div id="professorFields">
         <div class="field-row">
           <div class="field">
             <label>Department *</label>
-            <input type="text" id="dept" placeholder="e.g. Neurobiology" oninput="validateForm()">
+            <input type="text" id="dept" placeholder="e.g. Biology" oninput="validateForm()">
           </div>
           <div class="field">
             <label>Title *</label>
@@ -364,7 +378,7 @@
         <div class="error-notice" id="matchError">⚠ Passwords do not match.</div>
       </div>
 
-      <button class="btn-submit" id="submitBtn" onclick="finish()">Finish Signup</button>
+      <button type="button" class="btn-submit" id="submitBtn" onclick="finish()">Finish Signup</button>
     </div>
 
   </div>
@@ -388,13 +402,16 @@
     s2.style.display = 'block';
     
     const profFields = document.getElementById('professorFields');
+    const studFields = document.getElementById('studentFields');
     
     if (role === 'student') {
       document.getElementById('formSub').textContent = 'Joining as a student to discover research.';
       profFields.style.display = 'none';
+      studFields.style.display = 'block';
     } else {
       document.getElementById('formSub').textContent = 'Joining as faculty to post and manage positions.';
       profFields.style.display = 'block';
+      studFields.style.display = 'none';
     }
     
     document.getElementById('signupCard').style.maxWidth = '540px';
@@ -440,9 +457,11 @@
     validateForm();
   }
 
+  // Safe Click Listener
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('#uni') && !e.target.closest('#uniDropdown')) {
-      document.getElementById('uniDropdown').classList.remove('active');
+    const uniDropdown = document.getElementById('uniDropdown');
+    if (uniDropdown && !e.target.closest('#uni') && !e.target.closest('#uniDropdown')) {
+      uniDropdown.classList.remove('active');
     }
   });
 
@@ -486,18 +505,21 @@
       document.getElementById('confirmPassword').style.boxShadow = "none";
     }
 
-    // Professor specific validation
-    let profValid = true;
+    // Role specific validation
+    let roleValid = true;
     if (selectedRole === 'professor') {
       const dept = document.getElementById('dept').value.trim();
       const title = document.getElementById('title').value;
       const fid = document.getElementById('facultyId').value.trim();
       const office = document.getElementById('office').value.trim();
-      profValid = (dept && title && fid && office);
+      roleValid = !!(dept && title && fid && office);
+    } else if (selectedRole === 'student') {
+      const major = document.getElementById('major').value.trim();
+      roleValid = !!major;
     }
 
     // Final form check
-    if (fname && lname && uni && emailValid && lenValid && numValid && symValid && passwordsMatch && profValid) {
+    if (fname && lname && uni && emailValid && lenValid && numValid && symValid && passwordsMatch && roleValid) {
       btn.classList.add('ready');
       btn.disabled = false;
     } else {
@@ -508,12 +530,13 @@
 
   function updateCheck(id, isValid, isTyping) {
     const el = document.getElementById(id);
+    if (!el) return;
     el.classList.remove('valid', 'invalid');
     
     if (isValid) {
-      el.classList.add('valid'); // Glows Green
+      el.classList.add('valid');
     } else if (isTyping) {
-      el.classList.add('invalid'); // Glows Red
+      el.classList.add('invalid');
     }
   }
 
@@ -526,10 +549,12 @@
       localStorage.setItem('fms_uni', document.getElementById('uni').value.trim());
 
       if (selectedRole === 'student') {
+        // Save Student-specific fields
+        localStorage.setItem('fms_major', document.getElementById('major').value.trim());
+        
         window.location.href = 'studentPortal.html';
       } else if (selectedRole === 'professor') {
-        
-        // Save Professor-specific fields to LocalStorage
+        // Save Professor-specific fields
         localStorage.setItem('fms_dept', document.getElementById('dept').value.trim());
         localStorage.setItem('fms_office', document.getElementById('office').value.trim());
 
