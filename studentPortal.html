@@ -17,16 +17,16 @@
     --ink-soft: #4a4339;
     --cream: #f4efe6;
     --cream-dim: rgba(244, 239, 230, 0.72);
-    --cream-faint: rgba(244, 239, 230, 0.32);
     --accent: #e8a733;
     --terracotta: #c96442;
     --sage: #7a8b6d;
+    --blue: #4a8cc7;
     
-    /* Card banner colors */
-    --card-1: #6a8c88;
-    --card-2: #547aa5;
-    --card-3: #4a5d40;
-    --card-4: #4e5080;
+    /* Vibrant Canvas-style banner colors */
+    --card-1: #c96442; /* Terracotta */
+    --card-2: #4a6c8c; /* Steel Blue */
+    --card-3: #7a8b6d; /* Sage */
+    --card-4: #e8a733; /* Golden */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -74,7 +74,6 @@
     display: block;
     font-style: italic;
     color: var(--accent);
-    font-variation-settings: 'opsz' 144, 'wght' 500, 'SOFT' 80;
   }
 
   .nav-item {
@@ -91,25 +90,12 @@
     gap: 6px;
     border-left: 3px solid transparent;
   }
-  .nav-item:hover {
-    color: var(--cream);
-    background: rgba(244, 239, 230, 0.05);
-  }
-  .nav-item.active {
-    color: var(--cream);
-    border-left-color: var(--accent);
-    background: rgba(244, 239, 230, 0.08);
-  }
-  
-  .nav-item svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 1.5;
-  }
+  .nav-item:hover { color: var(--cream); background: rgba(244, 239, 230, 0.05); }
+  .nav-item.active { color: var(--cream); border-left-color: var(--accent); background: rgba(244, 239, 230, 0.08); }
+  .nav-item svg { width: 24px; height: 24px; stroke-width: 1.5; }
 
   .avatar {
-    width: 48px;
-    height: 48px;
+    width: 48px; height: 48px;
     border-radius: 50%;
     background: var(--surface-dim);
     background-image: url('https://api.dicebear.com/7.x/notionists/svg?seed=Felix');
@@ -118,7 +104,6 @@
     border: 2px solid transparent;
     transition: border 0.2s;
   }
-  .nav-item:hover .avatar { border-color: var(--cream); }
   .nav-item.active .avatar { border-color: var(--accent); }
 
   /* ============ MAIN LAYOUT ============ */
@@ -132,16 +117,6 @@
   .main-content {
     flex-grow: 1;
     padding: 40px 48px;
-    max-width: 1200px;
-  }
-
-  /* Right Sidebar (To Do list) */
-  .right-panel {
-    width: 320px;
-    flex-shrink: 0;
-    padding: 40px 32px;
-    border-left: 1px solid rgba(23, 20, 17, 0.1);
-    background: var(--surface);
   }
 
   /* ============ DASHBOARD HEADER ============ */
@@ -153,23 +128,29 @@
     padding-bottom: 24px;
     border-bottom: 1px solid rgba(23, 20, 17, 0.1);
   }
-
   .header h1 {
     font-family: 'Fraunces', serif;
     font-variation-settings: 'opsz' 144, 'wght' 400, 'SOFT' 30;
     font-size: 32px;
     letter-spacing: -0.02em;
   }
-
-  .header-actions {
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  .search-bar {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--surface-dim);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
   }
+  .search-bar input { border: none; outline: none; background: transparent; margin-left: 8px; width: 150px; }
 
   /* ============ CARD GRID ============ */
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 28px;
   }
 
@@ -177,16 +158,17 @@
     background: #fff;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
-    border: 1px solid rgba(23, 20, 17, 0.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.02);
+    border: 1px solid rgba(23, 20, 17, 0.06);
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
     display: flex;
     flex-direction: column;
+    min-height: 280px;
   }
   .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04);
   }
 
   .card-banner {
@@ -197,117 +179,167 @@
     align-items: flex-start;
     justify-content: space-between;
   }
-  .card-banner::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%);
-    pointer-events: none;
+  /* Decorative Patterns */
+  .pattern-overlay {
+    position: absolute; inset: 0; opacity: 0.15; pointer-events: none;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, #ffffff 10px, #ffffff 12px);
   }
   .card.theme-1 .card-banner { background: var(--card-1); }
   .card.theme-2 .card-banner { background: var(--card-2); }
   .card.theme-3 .card-banner { background: var(--card-3); }
+  .card.theme-3 .pattern-overlay { background-image: radial-gradient(circle, #fff 2px, transparent 2px); background-size: 16px 16px; }
   .card.theme-4 .card-banner { background: var(--card-4); }
+  .card.theme-4 .pattern-overlay { background-image: linear-gradient(0deg, transparent 24%, #fff 25%, #fff 26%, transparent 27%, transparent 74%, #fff 75%, #fff 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, #fff 25%, #fff 26%, transparent 27%, transparent 74%, #fff 75%, #fff 76%, transparent 77%, transparent); background-size: 30px 30px; }
 
   .card-badge {
-    position: relative;
-    z-index: 2;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: rgba(255,255,255,0.9);
-    color: var(--ink);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: 500;
+    position: relative; z-index: 2;
+    background: #fff; color: var(--ink);
+    padding: 4px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   
-  .card-more {
-    position: relative;
-    z-index: 2;
-    color: rgba(255,255,255,0.8);
-  }
-  .card-more:hover { color: #fff; }
+  .card-more { position: relative; z-index: 2; color: #fff; }
 
   .card-body {
-    padding: 20px;
+    padding: 16px 20px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
   }
-
+  .card-code {
+    font-size: 11px;
+    color: var(--blue);
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
   .card-title {
-    font-family: 'Fraunces', serif;
-    font-variation-settings: 'opsz' 36, 'wght' 500, 'SOFT' 20;
-    font-size: 18px;
-    line-height: 1.2;
-    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
     color: var(--ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-
-  .card-sub {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-bottom: 16px;
-  }
+  .card-sub { font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
   
-  .card-icons {
+  .card-footer {
     margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid rgba(23, 20, 17, 0.08);
+    padding-top: 12px;
+    border-top: 1px solid rgba(23, 20, 17, 0.06);
     display: flex;
     gap: 16px;
-    color: var(--ink-soft);
+    color: #8d8275;
   }
-  .card-icons svg { width: 18px; height: 18px; }
+  .icon-wrapper { position: relative; display: inline-flex; }
+  .icon-wrapper svg { width: 18px; height: 18px; }
+  .badge-dot {
+    position: absolute;
+    top: -4px; right: -6px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    min-width: 14px; height: 14px;
+    border-radius: 7px;
+    display: grid; place-items: center;
+    border: 2px solid #fff;
+  }
 
-  /* ============ RIGHT PANEL (TO-DO) ============ */
-  .panel-header {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+  /* ============ RIGHT PANEL (CANVAS CLONE) ============ */
+  .right-panel {
+    width: 320px;
+    flex-shrink: 0;
+    padding: 32px 24px;
+    border-left: 1px solid rgba(23, 20, 17, 0.1);
+    background: #fff;
+    overflow-y: auto;
+  }
+
+  /* Circular Status Indicator */
+  .status-circle-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .circular-chart {
+    display: block;
+    margin: 0 auto;
+    max-width: 140px;
+    max-height: 140px;
+  }
+  .circle-bg { fill: none; stroke: var(--surface-dim); stroke-width: 3.8; }
+  .circle { fill: none; stroke: var(--ink-soft); stroke-width: 3.8; stroke-linecap: round; }
+  .percentage { fill: var(--ink); font-family: 'Fraunces', serif; font-size: 8px; text-anchor: middle; font-weight: 600; }
+  .sub-percentage { fill: var(--ink-soft); font-family: 'Manrope', sans-serif; font-size: 3px; text-anchor: middle; }
+
+  /* Quick Action Row */
+  .quick-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 24px;
     color: var(--ink-soft);
-    margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .quick-action-item { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .quick-action-item:hover { color: var(--ink); }
+
+  /* Collapsible Lists */
+  .panel-section { margin-bottom: 32px; }
+  .panel-header {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
   }
-
-  .todo-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 40px;
+  .badge-dark {
+    background: var(--ink); color: #fff;
+    border-radius: 12px; padding: 2px 8px;
+    font-size: 11px; margin-right: 8px;
   }
 
   .todo-item {
     display: flex;
     gap: 12px;
     font-size: 13px;
+    margin-bottom: 12px;
+    padding: 8px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--surface);
+    position: relative;
   }
-  .todo-icon {
-    flex-shrink: 0;
-    color: var(--terracotta);
-    margin-top: 2px;
+  .todo-icon { flex-shrink: 0; color: var(--ink-soft); margin-top: 2px; }
+  .todo-content h4 { font-weight: 600; color: var(--ink); margin-bottom: 2px; font-size: 12px; }
+  .todo-content p { font-size: 11px; color: var(--ink-soft); }
+  
+  .btn-add-task {
+    width: 100%; padding: 10px;
+    border: 1px dashed var(--ink-soft);
+    border-radius: 6px; background: transparent;
+    color: var(--ink-soft); font-size: 13px; font-weight: 600;
+    margin-top: 8px;
   }
-  .todo-content h4 {
-    font-weight: 600;
-    color: var(--ink);
-    margin-bottom: 4px;
-    line-height: 1.3;
-  }
-  .todo-content p {
-    font-size: 12px;
-    color: var(--ink-soft);
-  }
+  .btn-add-task:hover { background: var(--surface); color: var(--ink); border-color: var(--ink); }
 
-  .close-btn {
-    margin-left: auto;
-    color: #a39c93;
+  /* Feedback Section */
+  .feedback-item {
+    display: flex; gap: 12px; margin-bottom: 16px;
   }
-  .close-btn:hover { color: var(--ink); }
+  .feedback-item svg { color: var(--success); flex-shrink: 0; margin-top: 2px; }
+  .feedback-title { color: var(--blue); font-size: 13px; margin-bottom: 2px; cursor: pointer; }
+  .feedback-title:hover { text-decoration: underline; }
+  .feedback-meta { font-size: 11px; color: var(--ink-soft); margin-bottom: 4px; }
+  .feedback-preview { font-size: 11px; color: var(--ink-soft); font-style: italic; line-height: 1.4; }
 
   /* ============ SCROLLBAR ============ */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -368,7 +400,11 @@
       <div class="header">
         <h1>Dashboard</h1>
         <div class="header-actions">
-          <button style="padding: 8px; color: var(--ink-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+          <button style="padding: 8px; color: var(--ink);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+          <div class="search-bar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" placeholder="Search...">
+          </div>
         </div>
       </div>
 
@@ -376,64 +412,92 @@
         
         <div class="card theme-1">
           <div class="card-banner">
-            <span class="card-badge">Research</span>
+            <div class="pattern-overlay"></div>
+            <span class="card-badge">85% Match</span>
             <button class="card-more">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
             </button>
           </div>
           <div class="card-body">
+            <div class="card-code">NEURO_LAB_01</div>
             <h3 class="card-title">Protein Folding Dynamics Lab</h3>
-            <div class="card-sub">Dr. Y. Tanaka<br/>Molecular Biology</div>
-            <div class="card-icons">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <div class="card-sub">Dr. Y. Tanaka • Spring 2026</div>
+            <div class="card-footer">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <div class="badge-dot">2</div>
+              </div>
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="card theme-2">
           <div class="card-banner">
-            <span class="card-badge">Teaching Asst.</span>
+            <div class="pattern-overlay"></div>
+            <span class="card-badge">Pending</span>
             <button class="card-more">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
             </button>
           </div>
           <div class="card-body">
-            <h3 class="card-title">CS 106B Programming Abstractions</h3>
-            <div class="card-sub">Dr. N. Roberts<br/>Computer Science</div>
-            <div class="card-icons">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <div class="card-code">CS_106B_TA</div>
+            <h3 class="card-title">Programming Abstractions TA</h3>
+            <div class="card-sub">Dr. N. Roberts • Spring 2026</div>
+            <div class="card-footer">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="card theme-3">
           <div class="card-banner">
-            <span class="card-badge">Internship</span>
+            <div class="pattern-overlay"></div>
+            <span class="card-badge">100% Match</span>
             <button class="card-more">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
             </button>
           </div>
           <div class="card-body">
-            <h3 class="card-title">Scripps Oceanography Summer</h3>
-            <div class="card-sub">Dr. P. Kahane<br/>SIO</div>
-            <div class="card-icons">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <div class="card-code">SIO_SUMMER_INT</div>
+            <h3 class="card-title">Scripps Oceanography Summer Intern</h3>
+            <div class="card-sub">Dr. P. Kahane • Summer 2026</div>
+            <div class="card-footer">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <div class="badge-dot">1</div>
+              </div>
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="card theme-4">
           <div class="card-banner">
-            <span class="card-badge">Research</span>
+            <div class="pattern-overlay"></div>
+            <span class="card-badge">Waitlisted</span>
             <button class="card-more">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
             </button>
           </div>
           <div class="card-body">
+            <div class="card-code">STAT_301_RES</div>
             <h3 class="card-title">Statistical modeling of turnout</h3>
-            <div class="card-sub">Dr. J. Okafor<br/>Statistics</div>
-            <div class="card-icons">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <div class="card-sub">Dr. J. Okafor • Spring 2026</div>
+            <div class="card-footer">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <div class="badge-dot">5</div>
+              </div>
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </div>
             </div>
           </div>
         </div>
@@ -443,46 +507,83 @@
 
     <aside class="right-panel">
       
-      <div class="panel-header">To Do</div>
-      
-      <div class="todo-list">
+      <div class="status-circle-container">
+        <svg viewBox="0 0 36 36" class="circular-chart">
+          <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path class="circle" stroke-dasharray="75, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <text x="18" y="17" class="percentage">75%</text>
+          <text x="18" y="22" class="sub-percentage">3/4 Apps Active</text>
+        </svg>
+      </div>
+
+      <div class="quick-actions">
+        <div class="quick-action-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 2</div>
+        <div class="quick-action-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 1</div>
+        <div class="quick-action-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> 0</div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-header">
+          <div><span class="badge-dark">2</span> Action Required</div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
         
-        <div class="todo-item">
-          <div class="todo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div class="todo-list">
+          <div class="todo-item">
+            <div class="todo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+            <div class="todo-content">
+              <h4>Submit Lab Safety Form</h4>
+              <p>Protein Folding Lab<br/>Due Tomorrow • 11:59pm</p>
+            </div>
           </div>
-          <div class="todo-content">
-            <h4>Submit Resume (Get started now!)</h4>
-            <p>Protein Folding Dynamics<br/>10 points • Aug 16 at 11:59pm</p>
-          </div>
-          <button class="close-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-        </div>
 
-        <div class="todo-item">
-          <div class="todo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <div class="todo-item">
+            <div class="todo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+            <div class="todo-content">
+              <h4>Confirm Interview Slot</h4>
+              <p>CS 106B Programming<br/>Due Tomorrow • 5:00pm</p>
+            </div>
           </div>
-          <div class="todo-content">
-            <h4>Interview with Dr. Roberts</h4>
-            <p>CS 106B Programming<br/>Meeting • Sep 14 at 11:59pm</p>
-          </div>
-          <button class="close-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
-
       </div>
 
-      <div class="panel-header">
-        <span>Coming Up</span>
+      <div class="panel-section">
+        <div class="panel-header">
+          <div><span class="badge-dark">1</span> Coming Up</div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="todo-list" style="margin-bottom: 12px;">
+          <div class="todo-item" style="border-color: transparent; padding-left: 0; background: transparent;">
+            <div class="todo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+            <div class="todo-content">
+              <h4>Lab Orientation Session</h4>
+              <p>Molecular Biology Annex<br/>Apr 22 at 9:00am</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-add-task">+ Add Custom Reminder</button>
       </div>
 
-      <div class="todo-list">
-        <div class="todo-item">
-          <div class="todo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      <div class="panel-section" style="margin-top: 40px;">
+        <div class="panel-header" style="color: var(--ink-soft); font-size: 11px; margin-bottom: 12px; cursor: default;">
+          RECENT FEEDBACK
+        </div>
+        
+        <div class="feedback-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <div>
+            <div class="feedback-title">Application Update</div>
+            <div class="feedback-meta">CS 106B TA • Apr 16</div>
+            <div class="feedback-preview">"Your transcript meets our core prerequisites. Moving you to the interview round..."</div>
           </div>
-          <div class="todo-content">
-            <h4>Lab Orientation Session</h4>
-            <p>Molecular Biology Annex<br/>Sep 15 at 9:00am</p>
+        </div>
+
+        <div class="feedback-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <div>
+            <div class="feedback-title">Document Verification</div>
+            <div class="feedback-meta">FindMyProfessor System • Apr 14</div>
+            <div class="feedback-preview">"Your uploaded transcript (UCI_Unofficial) has been verified."</div>
           </div>
         </div>
       </div>
