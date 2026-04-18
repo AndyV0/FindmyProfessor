@@ -9,7 +9,8 @@ import {
   addDoc, 
   serverTimestamp, 
   deleteDoc, 
-  doc 
+  setDoc, 
+  doc,    
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -29,4 +30,4 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Export the database and the necessary Firestore functions. As well as delete tool
-export { db, collection, getDocs, query, where, addDoc, serverTimestamp, deleteDoc, doc };
+export { db, collection, getDocs, query, where, addDoc, serverTimestamp, deleteDoc, doc, setDoc };
