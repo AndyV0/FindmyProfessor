@@ -796,7 +796,7 @@
   </nav>
 
   <div class="hero-inner">
-    <div class="eyebrow anim anim-2">Spring 2026 &nbsp;·&nbsp; 10 Universities</div>
+    <div class="eyebrow anim anim-2">Spring 2026 &nbsp;·&nbsp; 47 Universities</div>
 
     <h1 class="hero-title anim anim-3">
       Research that <span class="italic">finds</span> you.
@@ -1127,9 +1127,9 @@ function renderPositions(list, filter) {
   }
 
   const typeLabel = { research: 'Research', internship: 'Internship', ta: 'Teaching Asst.' };
-  
+
   grid.innerHTML = filtered.map(p => `
-    <div class="position" onclick="openSignup()">
+    <div class="position">
       <span class="position-type ${p.type}">${typeLabel[p.type]}</span>
       <h3>${p.title}</h3>
       <p class="position-prof"><strong>${p.prof}</strong> · ${p.dept}</p>
@@ -1138,12 +1138,12 @@ function renderPositions(list, filter) {
       </div>
       <div class="position-foot">
         <span>Posted ${p.posted}</span>
-        <span class="apply">Apply →</span>
+        <button class="apply" onclick="openLogin()">Apply →</button>
       </div>
     </div>
   `).join('');
 }
-  
+
 // ========== MODALS ==========
 const loginModal = document.getElementById('loginModal');
 
