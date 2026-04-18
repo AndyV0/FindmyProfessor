@@ -291,33 +291,33 @@
         <div class="field-grid">
           <div class="field">
             <label>First Name *</label>
-            <input type="text" id="fname" value="Elizabeth" oninput="validateAll()">
+            <input type="text" id="fname" placeholder="e.g. Jane" oninput="validateAll()">
             <div class="error-msg">Response Required</div>
           </div>
           <div class="field">
             <label>Last Name *</label>
-            <input type="text" id="lname" value="Thorne" oninput="validateAll()">
+            <input type="text" id="lname" placeholder="e.g. Doe" oninput="validateAll()">
             <div class="error-msg">Response Required</div>
           </div>
           <div class="field">
             <label>University *</label>
-            <input type="text" id="uniInput" value="University of California, Irvine (UCI)" autocomplete="off" oninput="handleUniDropdown()">
+            <input type="text" id="uniInput" placeholder="Select your university..." autocomplete="off" oninput="handleUniDropdown()">
             <div class="dropdown-menu" id="uniDropdown"></div>
             <div class="error-msg">Response Required</div>
           </div>
           <div class="field">
             <label>Department *</label>
-            <input type="text" id="dept" value="Neurobiology" oninput="validateAll()">
+            <input type="text" id="dept" placeholder="e.g. Biology" oninput="validateAll()">
             <div class="error-msg">Response Required</div>
           </div>
           <div class="field">
             <label>Office Location *</label>
-            <input type="text" id="office" value="Biology Sciences III, Room 402" oninput="validateAll()">
+            <input type="text" id="office" placeholder="e.g. Science Bldg, Room 101" oninput="validateAll()">
             <div class="error-msg">Response Required</div>
           </div>
           <div class="field">
             <label>General Campus Location *</label>
-            <input type="text" id="loc" value="Irvine, CA" oninput="validateAll()">
+            <input type="text" id="loc" placeholder="e.g. Los Angeles, CA" oninput="validateAll()">
             <div class="error-msg">Response Required</div>
           </div>
         </div>
@@ -329,7 +329,7 @@
         </div>
         <div class="field">
           <label>Research Summary *</label>
-          <textarea id="bio" oninput="updatePreview(); validateAll()">Our lab investigates molecular mechanisms of long-term memory formation, specifically focusing on protein folding dynamics and synaptic strengthening.</textarea>
+          <textarea id="bio" placeholder="Briefly describe your lab's focus..." oninput="updatePreview(); validateAll()"></textarea>
           <div class="error-msg">Response Required</div>
         </div>
       </section>
@@ -365,12 +365,12 @@
     </div>
     <div class="preview-card">
       <div class="preview-avatar"></div>
-      <div class="preview-name" id="previewName">Dr. Thorne</div>
-      <div class="preview-tag" id="previewDept">Neurobiology</div>
-      <div class="preview-bio" id="previewBio">Our lab investigates molecular mechanisms of long-term memory formation...</div>
+      <div class="preview-name" id="previewName">Dr. [Last Name]</div>
+      <div class="preview-tag" id="previewDept">[Department]</div>
+      <div class="preview-bio" id="previewBio">No summary provided...</div>
       <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--rule);">
       <div style="font-size: 11px; font-weight: 700; color: var(--terracotta); text-transform: uppercase;">Active Postings</div>
-      <div style="font-size: 13px; margin-top: 8px;">• Protein Folding Dynamics Lab</div>
+      <div style="font-size: 13px; margin-top: 8px;">• Example Research Lab</div>
     </div>
   </aside>
 
@@ -439,8 +439,8 @@
   }
 
   function updatePreview() {
-    document.getElementById('previewName').textContent = `Dr. ${document.getElementById('lname').value || 'Thorne'}`;
-    document.getElementById('previewDept').textContent = document.getElementById('dept').value || 'Department';
+    document.getElementById('previewName').textContent = `Dr. ${document.getElementById('lname').value || '[Last Name]'}`;
+    document.getElementById('previewDept').textContent = document.getElementById('dept').value || '[Department]';
     document.getElementById('previewBio').textContent = document.getElementById('bio').value || 'No summary provided...';
   }
 
@@ -458,6 +458,9 @@
     btn.style.background = "var(--success)";
     setTimeout(() => { btn.textContent = "Save Changes"; btn.style.background = "var(--ink)"; }, 2000);
   }
+
+  // Initial Check
+  validateAll();
 </script>
 </body>
 </html>
