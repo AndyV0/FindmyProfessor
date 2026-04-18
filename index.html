@@ -218,10 +218,6 @@
     letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream-faint);
     margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .search-hint kbd {
-    font-family: inherit; background: rgba(244,239,230,0.08);
-    border: 1px solid var(--cream-faint); padding: 2px 6px; border-radius: 3px; font-size: 10px;
-  }
 
   /* ============ SEARCH DROPDOWN ============ */
   .search-dropdown {
@@ -307,7 +303,10 @@
   }
 
   /* ============ FILTERS ============ */
-  .filters { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+  .toolbar {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+  }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
   .chip {
     font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 500;
     padding: 8px 16px; border-radius: 999px; background: transparent;
@@ -351,6 +350,7 @@
     font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
   }
   .position-foot .apply { color: var(--terracotta); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .position-foot .apply:hover { text-decoration: underline; }
 
   /* ============ MODAL ============ */
   .modal-backdrop {
@@ -370,7 +370,7 @@
   }
   .modal-close:hover { background: rgba(23,20,17,0.08); color: var(--ink); }
 
-  /* LOGIN / FORM */
+  /* FORMS */
   .form-modal .modal { max-width: 440px; }
   .form-panel { padding: 48px 44px 40px; }
   .form-panel .eyebrow { color: var(--ink-soft); margin-bottom: 20px; }
@@ -382,7 +382,7 @@
   .field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
   .field input, .field select { width: 100%; padding: 14px 16px; border: 1px solid rgba(23,20,17,0.2); border-radius: 6px; background: var(--surface); font-family: 'Manrope', sans-serif; font-size: 14px; color: var(--ink); transition: border 0.2s; }
   .field input:focus, .field select:focus { outline: none; border-color: var(--terracotta); }
-  .form-submit { width: 100%; background: var(--ink); color: var(--cream); padding: 15px; border-radius: 6px; font-weight: 600; font-size: 14px; letter-spacing: 0.02em; transition: background 0.2s; margin-top: 8px; }
+  .form-submit { width: 100%; background: var(--ink); color: var(--cream); padding: 15px; border-radius: 6px; font-weight: 600; font-size: 14px; letter-spacing: 0.02em; transition: background 0.2s; margin-top: 8px; border: none; cursor: pointer;}
   .form-submit:hover { background: var(--terracotta); }
   .form-footer { text-align: center; margin-top: 20px; font-size: 13px; color: var(--ink-soft); }
   .form-footer a { color: var(--terracotta); font-weight: 600; cursor: pointer; }
@@ -445,8 +445,8 @@
       FindMy<em>Professor</em>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-ghost" onclick="openLogin()">Log in</button>
-      <button class="btn btn-primary" onclick="openSignup()">Sign up →</button>
+      <button class="btn btn-ghost" onclick="window.openLogin()">Log in</button>
+      <button class="btn btn-primary" onclick="window.openSignup()">Sign up →</button>
     </div>
   </nav>
 
@@ -489,7 +489,7 @@
   <div class="footer-strip">
     <span>[01] — Index Spring '26</span>
     <span>Built for students & faculty</span>
-    <span>v1.0.0 — Firebase Powered</span>
+    <span>v1.2.0 — Modular Backend</span>
   </div>
 </div>
 
@@ -500,12 +500,12 @@
       FindMy<em>Professor</em>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-ghost" onclick="openLogin()">Log in</button>
-      <button class="btn btn-primary" onclick="openSignup()">Sign up →</button>
+      <button class="btn btn-ghost" onclick="window.openLogin()">Log in</button>
+      <button class="btn btn-primary" onclick="window.openSignup()">Sign up →</button>
     </div>
   </div>
 
-  <button class="back-link" onclick="goHome()">← Back to search</button>
+  <button class="back-link" onclick="window.goHome()">← Back to search</button>
 
   <div class="uni-header">
     <h2 id="uniTitle">Loading<em>…</em></h2>
@@ -516,11 +516,15 @@
     </div>
   </div>
 
-  <div class="filters">
-    <button class="chip active" data-filter="all">All positions</button>
-    <button class="chip" data-filter="research">Research</button>
-    <button class="chip" data-filter="internship">Internships</button>
-    <button class="chip" data-filter="ta">Teaching Asst.</button>
+  <div class="toolbar">
+    <div class="filters">
+      <button class="chip active" data-filter="all">All positions</button>
+      <button class="chip" data-filter="research">Research</button>
+      <button class="chip" data-filter="internship">Internships</button>
+      <button class="chip" data-filter="ta">Teaching Asst.</button>
+    </div>
+    
+    <button class="btn btn-accent" onclick="window.openAddRoleModal()">+ Post a Role</button>
   </div>
 
   <div class="positions-grid" id="positionsGrid"></div>
@@ -528,7 +532,7 @@
 
 <div class="modal-backdrop form-modal" id="loginModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModals()" aria-label="Close">
+    <button class="modal-close" onclick="window.closeModals()" aria-label="Close">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M18 6 6 18M6 6l12 12"/>
       </svg>
@@ -557,32 +561,53 @@
       <button class="form-submit" id="formSubmit">Log in</button>
 
       <div class="form-footer" id="formFooter">
-        New to FindMyProfessor? <a onclick="closeModals(); openSignup();">Create an account</a>
+        New to FindMyProfessor? <a onclick="window.closeModals(); window.openSignup();">Create an account</a>
       </div>
     </div>
   </div>
 </div>
 
+<div class="modal-backdrop form-modal" id="addRoleModal">
+  <div class="modal">
+    <button class="modal-close" onclick="window.closeModals()" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+    <div class="form-panel">
+      <h3>Post a <em>Role</em></h3>
+      <div class="field">
+        <label>Role Title</label>
+        <input type="text" id="newRoleTitle" placeholder="e.g. Data Analysis Intern" />
+      </div>
+      <div class="field">
+        <label>Type</label>
+        <select id="newRoleType">
+          <option value="research">Research</option>
+          <option value="internship">Internship</option>
+          <option value="ta">Teaching Assistant</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Professor / Supervisor</label>
+        <input type="text" id="newRoleProf" placeholder="Dr. Smith" />
+      </div>
+      <div class="field">
+        <label>Department</label>
+        <input type="text" id="newRoleDept" placeholder="e.g. Computer Science" />
+      </div>
+      <button class="form-submit" id="submitNewRole">Publish Role</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
-// ========== FIREBASE SETUP ==========
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// IMPORT FIREBASE LOGIC FROM OUR NEW SHARED MODULE
+import { db, collection, getDocs, query, where, addDoc, serverTimestamp } from './firebase.js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAgCbrgzvR0BH_rKFys2LiGuf5ZlLdkB-g",
-  authDomain: "findmyprofessor-cb1d5.firebaseapp.com",
-  projectId: "findmyprofessor-cb1d5",
-  storageBucket: "findmyprofessor-cb1d5.firebasestorage.app",
-  messagingSenderId: "471101293453",
-  appId: "1:471101293453:web:425212c47e581fef2873c4",
-  measurementId: "G-YXSM1XK7CX"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Global state to hold fetched positions for filtering
+// Global state
 let currentPositions = [];
+let currentUniId = "";
 
 // ========== DOM ELEMENTS ==========
 const searchInput = document.getElementById('uniSearch');
@@ -604,7 +629,7 @@ function renderUniResults(list) {
         <div class="uni-name">${u.name}</div>
         <div class="uni-loc">${u.loc}</div>
       </div>
-      <div class="uni-meta"><strong>${u.positions || 0}</strong>Open roles</div>
+      <div class="uni-meta"><strong>Select</strong></div>
     </button>
   `).join('');
   
@@ -645,10 +670,12 @@ document.addEventListener('click', (e) => {
 
 // ========== RESULTS VIEW & FILTERS ==========
 window.selectUniversity = async function(id, uniName) {
+  currentUniId = id; // Store for later when adding roles
+  
   const nameParts = uniName.split(' ');
   const lastWord = nameParts.pop();
   document.getElementById('uniTitle').innerHTML = `${nameParts.join(' ')} <em>${lastWord}</em>`;
-  document.getElementById('posCount').textContent = "..."; // Loading state
+  document.getElementById('posCount').textContent = "...";
 
   // UI Transitions
   document.getElementById('heroView').style.display = 'none';
@@ -657,12 +684,12 @@ window.selectUniversity = async function(id, uniName) {
   dropdown.classList.remove('active');
 
   try {
-    // Fetch Positions from Firestore
+    // Fetch Positions
     const posCol = collection(db, "positions");
     const q = query(posCol, where("uniId", "==", id));
     const posSnapshot = await getDocs(q);
     
-    currentPositions = posSnapshot.docs.map(doc => doc.data());
+    currentPositions = posSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
     document.getElementById('posCount').textContent = currentPositions.length;
     renderPositions(currentPositions, 'all');
@@ -678,7 +705,7 @@ function renderPositions(list, filter) {
   const filtered = filter === 'all' ? list : list.filter(p => p.type === filter);
 
   if (!filtered.length) {
-    grid.innerHTML = '<div style="padding:60px;text-align:center;color:var(--ink-soft);grid-column:1/-1">No positions in this category yet. Check back soon.</div>';
+    grid.innerHTML = '<div style="padding:60px;text-align:center;color:var(--ink-soft);grid-column:1/-1">No positions in this category yet. Click "+ Post a Role" to add one.</div>';
     return;
   }
 
@@ -694,13 +721,13 @@ function renderPositions(list, filter) {
       </div>
       <div class="position-foot">
         <span>Posted ${p.posted || 'Recently'}</span>
-        <span class="apply">Apply →</span>
+        <span class="apply" onclick="window.applyForRole('${p.id}')">Apply →</span>
       </div>
     </div>
   `).join('');
 }
 
-// Wire up filter chips
+// Filters
 document.querySelectorAll('.chip').forEach(chip => {
   chip.onclick = () => {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -709,7 +736,7 @@ document.querySelectorAll('.chip').forEach(chip => {
   };
 });
 
-// ========== UI/MODAL FUNCTIONS (Attached to window for module scope) ==========
+// ========== UI/MODAL FUNCTIONS ==========
 window.goHome = function() {
   document.getElementById('heroView').style.display = 'flex';
   document.getElementById('resultsView').classList.remove('active');
@@ -732,12 +759,22 @@ window.openLogin = function() {
   document.body.style.overflow = 'hidden';
 };
 
+window.openAddRoleModal = function() {
+  document.getElementById('addRoleModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
 window.closeModals = function() {
-  document.getElementById('loginModal').classList.remove('active');
+  document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
   document.body.style.overflow = '';
 };
 
-// Modal dismiss events
+// Application Placeholder
+window.applyForRole = function(positionId) {
+  alert("Application process triggered for role ID: " + positionId + "\n\n(This will be connected to the 'applications' database next!)");
+};
+
+// Modal Dismiss
 document.querySelectorAll('.modal-backdrop').forEach(m => {
   m.addEventListener('click', (e) => {
     if (e.target === m) window.closeModals();
@@ -751,6 +788,48 @@ document.getElementById('formSubmit').addEventListener('click', (e) => {
   e.preventDefault();
   window.closeModals();
   alert('Demo — account flow would continue here.');
+});
+
+// ========== POST A NEW ROLE LOGIC ==========
+document.getElementById('submitNewRole').addEventListener('click', async () => {
+  const title = document.getElementById('newRoleTitle').value.trim();
+  const type = document.getElementById('newRoleType').value;
+  const prof = document.getElementById('newRoleProf').value.trim();
+  const dept = document.getElementById('newRoleDept').value.trim();
+
+  if (!title || !prof) return alert("Please fill out the Title and Professor fields.");
+
+  const submitBtn = document.getElementById('submitNewRole');
+  submitBtn.textContent = "Publishing...";
+
+  try {
+    await addDoc(collection(db, "positions"), {
+      uniId: currentUniId,
+      title: title,
+      type: type,
+      prof: prof,
+      dept: dept,
+      tags: ["New"],
+      posted: "Just now",
+      createdAt: serverTimestamp()
+    });
+
+    // Reset Form
+    window.closeModals();
+    document.getElementById('newRoleTitle').value = "";
+    document.getElementById('newRoleProf').value = "";
+    document.getElementById('newRoleDept').value = "";
+    submitBtn.textContent = "Publish Role";
+    
+    // Refresh the UI to show the new role immediately
+    const uniTitleText = document.getElementById('uniTitle').textContent;
+    window.selectUniversity(currentUniId, uniTitleText);
+
+  } catch (error) {
+    console.error("Error adding document: ", error);
+    submitBtn.textContent = "Publish Role";
+    alert("Failed to publish role. Check your console for details.");
+  }
 });
 </script>
 </body>
